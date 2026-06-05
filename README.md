@@ -1,14 +1,14 @@
-# AxialDB — evaluation releases
+# AxialDB evaluation releases
 
 **Proprietary software. Not open source.**
 
-This repository distributes **prebuilt evaluation binaries** for **AxialDB**, a product of **IT ART Inc.** (Canadian corporation). AxialDB is the columnar analytics extension for SQL databases. This repo does **not** contain source code, and it is **not** the full commercial product offering.
+This repository distributes **prebuilt evaluation binaries** for **AxialDB**, a product of **IT ART Inc.** (Ontario, Canada). AxialDB is the columnar analytics extension for SQL databases. This repository does **not** contain source code, does **not** grant any open-source license, and is **not** the full commercial product offering.
 
 ## What this repository is for
 
 | Purpose | Description |
 |--------|-------------|
-| **Evaluation** | Let qualified prospects try AxialDB on their own infrastructure before purchasing a commercial license. |
+| **Evaluation** | Let qualified prospects test AxialDB in non-production environments before purchasing a commercial license. |
 | **Releases by database** | GitHub [Releases](https://github.com/AxialDB/releases/releases) are organized by target database (for example SQLite, MySQL). Each asset lists version, build date, and evaluation limits. |
 
 ## What this repository is not
@@ -16,12 +16,16 @@ This repository distributes **prebuilt evaluation binaries** for **AxialDB**, a 
 - **Not** an open-source project (no source, no OSS license).
 - **Not** for production use, redistribution, or embedding in shipped products without a commercial agreement.
 - **Not** a substitute for a supported commercial build, SLA, or updates.
+- **Not** intended for production databases, business-critical workloads, regulated data, or any data that has not been backed up.
+- **Not** a contribution repository. Issues, pull requests, forks, and reuse of the binaries are not part of the evaluation license.
 
 ## License and terms
 
 Downloading, installing, or using any binary from this repository means you accept the **[Evaluation License Agreement](EVALUATION_LICENSE.md)** in full.
 
 GitHub may show **“No license”** on this repository because no open-source license is granted. Your rights come only from `EVALUATION_LICENSE.md` and any separate written agreement with **IT ART Inc.**
+
+Evaluation binaries are provided **AS IS**, without warranty, support commitment, production rights, or responsibility for data loss, database corruption, downtime, or other damages. Review the Evaluation License Agreement before downloading or running any release.
 
 ## Getting binaries
 
@@ -31,6 +35,8 @@ GitHub may show **“No license”** on this repository because no open-source l
 4. Install per the instructions in that release.
 
 Evaluation builds may be **time-limited**, **row-limited**, or **feature-limited** compared to commercial builds. See each release’s notes.
+
+Before testing, use disposable or backed-up databases only. Do not connect evaluation builds to production systems unless you have a separate written commercial agreement with IT ART Inc.
 
 ## Commercial licenses
 
@@ -44,4 +50,6 @@ AxialDB adds **isolated analytical views** inside databases you already run: mat
 
 ---
 
-*Evaluation binaries are provided **as is** without warranty. See [EVALUATION_LICENSE.md](EVALUATION_LICENSE.md) for disclaimers and limitation of liability.*
+Copyright (c) 2026 IT ART Inc. All rights reserved.
+
+*Evaluation binaries are provided **AS IS** without warranty. See [EVALUATION_LICENSE.md](EVALUATION_LICENSE.md) for disclaimers, exclusions of damages, and limitation of liability.*
