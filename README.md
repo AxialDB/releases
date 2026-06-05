@@ -1,0 +1,2 @@
+# releases
+Official AxialDB binaries
