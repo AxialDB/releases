@@ -1,8 +1,6 @@
 -- Register AxialDB helper UDFs (run after INSTALL PLUGIN axialdb SONAME 'ha_axialdb.dll').
 -- MySQL 9.7: DROP FUNCTION first if re-installing after DLL upgrade.
 
-DROP FUNCTION IF EXISTS analytics_init;
-DROP FUNCTION IF EXISTS analytics_drop_view;
 DROP FUNCTION IF EXISTS axialdb_init;
 DROP FUNCTION IF EXISTS axialdb_drop_view;
 
