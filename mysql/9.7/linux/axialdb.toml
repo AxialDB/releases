@@ -1,13 +1,13 @@
-# Example config (Linux eval - not yet released).
-# Copy to a permanent path (e.g. /etc/axialdb/axialdb.toml) and edit for your environment.
-# Set AXIALDB_CONFIG to the absolute path of your installed copy.
+# AxialDB eval / release layout (Linux).
+# Installed copy: /etc/axialdb/axialdb.toml
+# AXIALDB_CONFIG must be set for mysqld (systemd) and when starting axialdb-engine.
 
 [data]
 axialdb_data_dir = "/var/lib/axialdb/data"
 
 [helper]
 auto_spawn = false
-executable = "/opt/axialdb/axialdb-engine"
+executable = "/usr/local/axialdb/axialdb-engine"
 listen = "127.0.0.1:9742"
 
 [catalog]

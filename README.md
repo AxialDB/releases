@@ -39,7 +39,7 @@ Evaluation binaries are provided **AS IS**, without warranty, support commitment
 | Database | Platform | Guide |
 |----------|----------|-------|
 | MySQL 9.7 | Windows x64 | [`mysql/9.7/windows/README.md`](mysql/9.7/windows/README.md) |
-| MySQL 9.7 | Linux x64 | [`mysql/9.7/linux/README.md`](mysql/9.7/linux/README.md) (planned) |
+| MySQL 9.7 | Linux x64 | [`mysql/9.7/linux/README.md`](mysql/9.7/linux/README.md) |
 
 Published versions: [`RELEASES.md`](RELEASES.md).
 
