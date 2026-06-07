@@ -1,0 +1,45 @@
+# Example config - copy to a permanent path and edit for your environment.
+# Set AXIALDB_CONFIG to the absolute path of your installed copy.
+
+[data]
+axialdb_data_dir = "C:/ProgramData/AxialDB/data"
+
+[helper]
+auto_spawn = false
+executable = "C:/Program Files/AxialDB/axialdb-engine.exe"
+listen = "127.0.0.1:9742"
+
+[catalog]
+database = "catalog.db"
+
+[retention]
+unused_days = 30
+janitor_interval_secs = 3600
+dry_run = false
+
+[engine]
+target_partitions = 0
+
+[engine.tuning]
+batch_size = 8192
+skip_partial_agg_probe_rows = 100
+skip_partial_agg_probe_ratio = 0.8
+parquet_pruning = true
+ipc_coalesce_target_rows = 65536
+
+[parquet]
+max_row_group_size_bytes = 262144
+compression = "zstd"
+
+[execution]
+embedded_enabled = false
+default_execution = "sidecar"
+default_cardinality = "auto"
+default_materialization = "snapshot"
+
+[ipc]
+query_timeout_secs = 300
+
+[logging]
+level = "info"
+file = "C:/ProgramData/AxialDB/logs/axialdb-engine.log"

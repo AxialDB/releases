@@ -1,0 +1,12 @@
+{
+  "axialdb_version": "0.1.0",
+  "product": "mysql",
+  "mysql_version": "9.7",
+  "platform": "windows-x64",
+  "build_id": "20260606-001",
+  "artifact": "axialdb-mysql-9.7-windows-x64-0.1.0.zip",
+  "sha256": "09c7f441ce5e1679a5351516ee1a312ed706cc17e84a0b4fd41b13479f3b3314",
+  "released_at": "2026-06-06T12:00:00Z",
+  "github_release_tag": "mysql/9.7/windows/v0.1.0",
+  "notes": "First public MySQL 9.7 Windows x64 eval drop."
+}

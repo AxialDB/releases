@@ -32,7 +32,16 @@ Evaluation binaries are provided **AS IS**, without warranty, support commitment
 1. Open **[Releases](https://github.com/AxialDB/releases/releases)**.
 2. Choose the release for your database and platform.
 3. Read the release notes (evaluation limits, expiry if any, checksums).
-4. Install per the instructions in that release.
+4. Install per the instructions in that release (also in the zip `README.md`).
+
+### Install guides (in repo)
+
+| Database | Platform | Guide |
+|----------|----------|-------|
+| MySQL 9.7 | Windows x64 | [`mysql/9.7/windows/README.md`](mysql/9.7/windows/README.md) |
+| MySQL 9.7 | Linux x64 | [`mysql/9.7/linux/README.md`](mysql/9.7/linux/README.md) (planned) |
+
+Published versions: [`RELEASES.md`](RELEASES.md).
 
 Evaluation builds may be **time-limited**, **row-limited**, or **feature-limited** compared to commercial builds. See each release’s notes.
 
