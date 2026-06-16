@@ -3,9 +3,15 @@
 
 [data]
 axialdb_data_dir = "C:/ProgramData/AxialDB/data"
+# Janitor only (optional): MySQL @@datadir for orphan published-catalog cleanup.
+# Checks whether {schema}/{table}.sdi exists (read-only); does not parse or modify
+# MySQL metadata or data. Omit (or unset AXIALDB_MYSQL_DATADIR) to skip this pass.
+mysql_datadir = "C:/ProgramData/MySQL/MySQL Server 9.7/Data"
 
 [helper]
+# Sidecar runs as Windows SCM AxialDBEngine (required). mysqld only probes helper.listen.
 auto_spawn = false
+service_name = "AxialDBEngine"
 executable = "C:/Program Files/AxialDB/axialdb-engine.exe"
 listen = "127.0.0.1:9742"
 
@@ -39,6 +45,7 @@ default_materialization = "snapshot"
 
 [ipc]
 query_timeout_secs = 300
+server_query_timeout_secs = 30
 
 [logging]
 level = "info"

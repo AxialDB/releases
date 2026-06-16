@@ -4,9 +4,15 @@
 
 [data]
 axialdb_data_dir = "/var/lib/axialdb/data"
+# Janitor only (optional): MySQL @@datadir for orphan published-catalog cleanup.
+# Checks whether {schema}/{table}.sdi exists (read-only); does not parse or modify
+# MySQL metadata or data. Omit (or unset AXIALDB_MYSQL_DATADIR) to skip this pass.
+mysql_datadir = "/var/lib/mysql"
 
 [helper]
+# Sidecar runs as systemd axialdb-engine.service (required). mysqld only probes helper.listen.
 auto_spawn = false
+service_name = "axialdb-engine"
 executable = "/usr/local/axialdb/axialdb-engine"
 listen = "127.0.0.1:9742"
 
@@ -40,6 +46,7 @@ default_materialization = "snapshot"
 
 [ipc]
 query_timeout_secs = 300
+server_query_timeout_secs = 30
 
 [logging]
 level = "info"

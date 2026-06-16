@@ -1,0 +1,17 @@
+[Unit]
+Description=AxialDB analytics sidecar for MySQL
+Documentation=https://github.com/AxialDB/releases/tree/main/mysql/9.7/linux
+After=network-online.target mysqld.service
+Wants=network-online.target
+
+[Service]
+Type=simple
+Environment=AXIALDB_CONFIG=/etc/axialdb/axialdb.toml
+ExecStart=/usr/local/axialdb/axialdb-engine --config /etc/axialdb/axialdb.toml
+Restart=on-failure
+RestartSec=5
+# Run as the same account as mysqld when possible (override in drop-in).
+User=mysql
+
+[Install]
+WantedBy=multi-user.target

@@ -1,0 +1,12 @@
+{
+  "axialdb_version": "0.1.1",
+  "product": "mysql",
+  "mysql_version": "9.7",
+  "platform": "windows-x64",
+  "build_id": "20260615-002",
+  "artifact": "axialdb-mysql-9.7-windows-x64-0.1.1.zip",
+  "sha256": "a411517282411ae47054b8763e672bf73cbf1af8621e3a2cd232c78f6656b7be",
+  "released_at": "2026-06-16T12:00:00Z",
+  "github_release_tag": "mysql/9.7/windows/v0.1.1",
+  "notes": "External QA fixes, Linux IPC TCP_NODELAY, catalog rename, janitor orphan sweep, engine singleton lock. Dev commit 6b6ce45."
+}

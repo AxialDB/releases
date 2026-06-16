@@ -1,0 +1,12 @@
+{
+  "axialdb_version": "0.1.1",
+  "product": "mysql",
+  "mysql_version": "9.7",
+  "platform": "linux-x64",
+  "build_id": "20260615-002",
+  "artifact": "axialdb-mysql-9.7-linux-x64-0.1.1.zip",
+  "sha256": "d7867eb5e8a2c671c091c0932bc082bc806c6e53c1d3ba69c68999a8902f084d",
+  "released_at": "2026-06-16T12:00:00Z",
+  "github_release_tag": "mysql/9.7/linux/v0.1.1",
+  "notes": "External QA fixes, Linux IPC TCP_NODELAY, catalog rename, janitor orphan sweep, engine singleton lock. Dev commit 6b6ce45."
+}
