@@ -89,8 +89,8 @@ Stop MySQL first (`Stop-Service MySQL97`, or your service name).
    ```powershell
    $config = "C:\ProgramData\AxialDB\mysql\axialdb.toml"
    $engine = "C:\Program Files\AxialDB\axialdb-engine.exe"
-   sc.exe create AxialDBEngine binPath= "`"$engine`" --config `"$config`"" start= auto DisplayName= "AxialDB Analytics Engine"
-   sc.exe config AxialDBEngine obj= LocalSystem
+   $bin = "`"$engine`" --config `"$config`""
+   New-Service -Name AxialDBEngine -BinaryPathName $bin -DisplayName "AxialDB Analytics Engine" -StartupType Automatic
    sc.exe failure AxialDBEngine reset= 86400 actions= restart/60000/restart/60000/restart/60000
    Start-Service AxialDBEngine
    ```
