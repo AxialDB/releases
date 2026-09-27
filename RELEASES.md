@@ -6,7 +6,7 @@ Artifact checksums and install docs for each drop. Binaries are attached to [Git
 
 | AxialDB | Product | Platform | Build-ID | Released | SHA256 (zip) | Release |
 |---------|---------|----------|----------|----------|--------------|---------|
-| 5.0.0 | MySQL 9.7 | windows-x64 | 20260927-002 | 2026-09-27 | `c94682f8…1334` | [v5.0.0](https://github.com/AxialDB/releases/releases/tag/mysql/9.7/windows/v5.0.0) · [notes](release-notes/mysql-9.7-windows-v5.0.0.md) |
+| 5.0.0 | MySQL 9.7 | windows-x64 | 20260927-004 | 2026-09-27 | `a785afc6…f1c4` | [v5.0.0](https://github.com/AxialDB/releases/releases/tag/mysql/9.7/windows/v5.0.0) · [notes](release-notes/mysql-9.7-windows-v5.0.0.md) |
 | 5.0.0 | MySQL 9.7 | linux-x64 | 20260927-003 | 2026-09-27 | `fb4910d2…58b6` | [v5.0.0](https://github.com/AxialDB/releases/releases/tag/mysql/9.7/linux/v5.0.0) · [notes](release-notes/mysql-9.7-linux-v5.0.0.md) |
 
 Install: [mysql/9.7/windows/README.md](mysql/9.7/windows/README.md) · [mysql/9.7/linux/README.md](mysql/9.7/linux/README.md)

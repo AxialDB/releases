@@ -3,9 +3,9 @@
   "product": "mysql",
   "mysql_version": "9.7",
   "platform": "windows-x64",
-  "build_id": "20260927-002",
+  "build_id": "20260927-004",
   "artifact": "axialdb-mysql-9.7-windows-x64-5.0.0.zip",
-  "sha256": "c94682f8dedf964bc7c7234c12d8e3431a43c7a0e4669562e408676275f31334",
+  "sha256": "a785afc69c68c4f221263e24d5305eb227c4c28a9cf08543d3132d510cbff1c4",
   "released_at": "2026-09-27T00:00:00Z",
   "github_release_tag": "mysql/9.7/windows/v5.0.0",
   "notes": "Free release. 5 views, 2 live. CDC is opt-in. This download uses TERMS.md."

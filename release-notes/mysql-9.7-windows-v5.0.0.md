@@ -1,8 +1,8 @@
 ## AxialDB 5.0.0 - MySQL 9.7 Windows x64
 
 **Artifact:** `axialdb-mysql-9.7-windows-x64-5.0.0.zip`  
-**Build-ID:** `20260927-002`  
-**SHA256:** `c94682f8dedf964bc7c7234c12d8e3431a43c7a0e4669562e408676275f31334`  
+**Build-ID:** `20260927-004`  
+**SHA256:** `a785afc69c68c4f221263e24d5305eb227c4c28a9cf08543d3132d510cbff1c4`  
 **Released:** 2026-09-27
 
 Free release. Five views, two of them live. It does not expire. [Terms of use](https://github.com/AxialDB/releases/blob/main/TERMS.md).
