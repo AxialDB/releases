@@ -3,9 +3,9 @@
   "product": "mysql",
   "mysql_version": "9.7",
   "platform": "linux-x64",
-  "build_id": "20260927-001",
+  "build_id": "20260927-003",
   "artifact": "axialdb-mysql-9.7-linux-x64-5.0.0.zip",
-  "sha256": "fb872f8111b7f4f379eb9cfdf78240164e60045711b9c4deab3bf0f6f4ae45cc",
+  "sha256": "fb4910d2f0fe9dbcd11a6d6f12b8f9a3faef7f9ec0f860c14efb73777f7258b6",
   "released_at": "2026-09-27T00:00:00Z",
   "github_release_tag": "mysql/9.7/linux/v5.0.0",
   "notes": "Free release. 5 views, 2 live. CDC is opt-in. This download uses TERMS.md."

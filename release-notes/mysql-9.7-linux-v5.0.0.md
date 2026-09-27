@@ -1,8 +1,8 @@
 ## AxialDB 5.0.0 - MySQL 9.7 Linux x64
 
 **Artifact:** `axialdb-mysql-9.7-linux-x64-5.0.0.zip`  
-**Build-ID:** `20260927-001`  
-**SHA256:** `fb872f8111b7f4f379eb9cfdf78240164e60045711b9c4deab3bf0f6f4ae45cc`  
+**Build-ID:** `20260927-003`  
+**SHA256:** `fb4910d2f0fe9dbcd11a6d6f12b8f9a3faef7f9ec0f860c14efb73777f7258b6`  
 **Released:** 2026-09-27
 
 Free release. Five views, two of them live. It does not expire. [Terms of use](https://github.com/AxialDB/releases/blob/main/TERMS.md).
