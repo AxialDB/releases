@@ -1,9 +1,9 @@
 ## AxialDB 5.0.0 - MySQL 9.7 Windows x64
 
 **Artifact:** `axialdb-mysql-9.7-windows-x64-5.0.0.zip`  
-**Build-ID:** `20260926-001`  
-**SHA256:** `0faf30f2f4d1d288328a98e7d597793cda554f85220b0ef59d24a198ab17cbe7`  
-**Released:** 2026-09-26
+**Build-ID:** `20260927-001`  
+**SHA256:** `bed57a97507e94f13d6b3642bd7d84462aaa710f7d1b7c803f470e42f34f8434`  
+**Released:** 2026-09-27
 
 Free release. Five views, two of them live. It does not expire. [Terms of use](https://github.com/AxialDB/releases/blob/main/TERMS.md).
 
@@ -11,7 +11,7 @@ Free release. Five views, two of them live. It does not expire. [Terms of use](h
 
 [Windows install guide](https://github.com/AxialDB/releases/blob/main/mysql/9.7/windows/README.md)
 
-The zip contains the engine, the bridge, `TERMS.md`, and `cdc-limitations.md`. The MySQL plugin is a separate file on this release: `ha_axialdb-<version>-windows-x64.dll`. The [install guide](https://github.com/AxialDB/releases/blob/main/mysql/9.7/windows/README.md) says how to match it to `SELECT VERSION()` and copy it as `ha_axialdb.dll`.
+The engine zip is attached to this release. The MySQL plugin and the bridge are in the repository, in [mysql/9.7/windows](https://github.com/AxialDB/releases/tree/main/mysql/9.7/windows): `ha_axialdb-<version>-windows-x64.dll` and `axialdb_mysql_bridge.dll`. The [install guide](https://github.com/AxialDB/releases/blob/main/mysql/9.7/windows/README.md) says how to match the plugin to `SELECT VERSION()` and copy it as `ha_axialdb.dll`.
 
 ### Changes in 5.0.0
 

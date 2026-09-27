@@ -1,9 +1,9 @@
 ## AxialDB 5.0.0 - MySQL 9.7 Linux x64
 
 **Artifact:** `axialdb-mysql-9.7-linux-x64-5.0.0.zip`  
-**Build-ID:** `20260926-001`  
-**SHA256:** `6dfcba8e59858fd8e8f4aa2904577c084a26f9f7c7e1f97df54fa3e20b750d66`  
-**Released:** 2026-09-26
+**Build-ID:** `20260927-001`  
+**SHA256:** `fb872f8111b7f4f379eb9cfdf78240164e60045711b9c4deab3bf0f6f4ae45cc`  
+**Released:** 2026-09-27
 
 Free release. Five views, two of them live. It does not expire. [Terms of use](https://github.com/AxialDB/releases/blob/main/TERMS.md).
 
@@ -11,7 +11,7 @@ Free release. Five views, two of them live. It does not expire. [Terms of use](h
 
 [Linux install guide](https://github.com/AxialDB/releases/blob/main/mysql/9.7/linux/README.md)
 
-The zip contains the engine, the bridge, `axialdb-engine.service`, `TERMS.md`, and `cdc-limitations.md`. The MySQL plugin is a separate file on this release: `ha_axialdb-<version>-linux-x64.so`. The [install guide](https://github.com/AxialDB/releases/blob/main/mysql/9.7/linux/README.md) says how to match it to `SELECT VERSION()` and copy it as `ha_axialdb.so`. Linux x86_64 needs glibc 2.35 or newer.
+The engine zip is attached to this release. The MySQL plugin and the bridge are in the repository, in [mysql/9.7/linux](https://github.com/AxialDB/releases/tree/main/mysql/9.7/linux): `ha_axialdb-<version>-linux-x64.so` and `libaxialdb_mysql_bridge.so`. The [install guide](https://github.com/AxialDB/releases/blob/main/mysql/9.7/linux/README.md) says how to match the plugin to `SELECT VERSION()` and copy it as `ha_axialdb.so`. Linux x86_64 needs glibc 2.35 or newer.
 
 ### Changes in 5.0.0
 

@@ -35,17 +35,17 @@ These paths match the `axialdb.toml` in the zip.
 | Engine log | `/var/log/axialdb/axialdb-engine.log` |
 | Service | `axialdb-engine.service` |
 
-The zip contains the engine, `libaxialdb_mysql_bridge.so`, `install-axialdb-mysql-functions.sql`, `cdc-limitations.md`, `TERMS.md`, `THIRD-PARTY-NOTICES.md`, and `VERSION`. The plugin `.so` is a separate file on the GitHub release, named for your MySQL patch.
+The zip contains the engine, `install-axialdb-mysql-functions.sql`, `cdc-limitations.md`, `TERMS.md`, `THIRD-PARTY-NOTICES.md`, and `VERSION`. The plugin `.so` and `libaxialdb_mysql_bridge.so` are in this folder. The plugin name includes your MySQL patch.
 
 ## Install
 
-1. The plugin is a separate file on the same GitHub release as this zip. It is not one file for every MySQL patch.
+1. The plugin file is in this folder. Its name includes the MySQL patch. There is not one plugin for every patch.
 
    ```sql
    SELECT VERSION();
    ```
 
-   Download `ha_axialdb-<version>-linux-x64.so`, where `<version>` is that string (`9.7.0` is `ha_axialdb-9.7.0-linux-x64.so`). If that file is not on the release, this AxialDB build does not support that MySQL patch.
+   Use `ha_axialdb-<version>-linux-x64.so`, where `<version>` is that string (`9.7.0` is `ha_axialdb-9.7.0-linux-x64.so` in this folder). If that file is not here, this AxialDB build does not support that MySQL patch.
 
    ```bash
    VERSION=9.7.0   # numeric prefix from SELECT VERSION(), drop a -log suffix
@@ -56,7 +56,7 @@ The zip contains the engine, `libaxialdb_mysql_bridge.so`, `install-axialdb-mysq
 
    The bridge comes from the zip. Do not rename it. The plugin loads `libaxialdb_mysql_bridge.so` from that same directory.
 
-   When you later move to another 9.7 patch, replace only `ha_axialdb.so` with the file for the new `SELECT VERSION()`, then restart MySQL. Leave the engine and the bridge in place.
+   When you later move to another 9.7 patch, replace only `ha_axialdb.so` with the file for the new `SELECT VERSION()`, then restart MySQL. Leave the engine and the bridge in place. Fixes are built for the newest 9.7 patch on the release. Older plugin files stay available and are not rebuilt.
 
 2. Engine:
 

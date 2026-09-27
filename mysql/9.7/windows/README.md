@@ -37,19 +37,19 @@ These paths match the `axialdb.toml` in the zip. If you move anything, change th
 | Engine log | `C:\ProgramData\AxialDB\mysql\logs\axialdb-engine.log` |
 | Service | `AxialDBEngine` |
 
-The zip contains the engine, `axialdb_mysql_bridge.dll`, `install-axialdb-mysql-functions.sql`, `cdc-limitations.md`, `TERMS.md`, `THIRD-PARTY-NOTICES.md`, and `VERSION`. The plugin DLL is a separate file on the GitHub release, named for your MySQL patch.
+The zip contains the engine, `install-axialdb-mysql-functions.sql`, `cdc-limitations.md`, `TERMS.md`, `THIRD-PARTY-NOTICES.md`, and `VERSION`. The plugin DLL and `axialdb_mysql_bridge.dll` are in this folder. The plugin name includes your MySQL patch.
 
 ## Install
 
 Stop MySQL first (`Stop-Service MySQL97`, or your service name).
 
-1. The plugin is a separate file on the same GitHub release as this zip. It is not one file for every MySQL patch.
+1. The plugin file is in this folder. Its name includes the MySQL patch. There is not one plugin for every patch.
 
    ```sql
    SELECT VERSION();
    ```
 
-   Download `ha_axialdb-<version>-windows-x64.dll`, where `<version>` is that string (`9.7.0` is `ha_axialdb-9.7.0-windows-x64.dll`). If that file is not on the release, this AxialDB build does not support that MySQL patch.
+   Use `ha_axialdb-<version>-windows-x64.dll`, where `<version>` is that string (`9.7.0` is `ha_axialdb-9.7.0-windows-x64.dll` in this folder). If that file is not here, this AxialDB build does not support that MySQL patch.
 
    ```powershell
    $Version = "9.7.0"   # numeric prefix from SELECT VERSION(), drop a -log suffix
@@ -61,7 +61,7 @@ Stop MySQL first (`Stop-Service MySQL97`, or your service name).
 
    Do not rename the bridge. If it is missing, MySQL reports error 126 when it loads the plugin.
 
-   When you later move to another 9.7 patch, replace only `ha_axialdb.dll` with the file for the new `SELECT VERSION()`, then restart MySQL. Leave the engine and the bridge in place.
+   When you later move to another 9.7 patch, replace only `ha_axialdb.dll` with the file for the new `SELECT VERSION()`, then restart MySQL. Leave the engine and the bridge in place. Fixes are built for the newest 9.7 patch on the release. Older plugin files stay available and are not rebuilt.
 
 2. Create `C:\Program Files\AxialDB\` and copy `axialdb-engine.exe` there.
 
