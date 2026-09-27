@@ -1,4 +1,4 @@
-## AxialDB 0.1.1 - MySQL 9.7 Windows x64 (eval)
+## AxialDB 0.1.1 - MySQL 9.7 Windows x64
 
 **Artifact:** `axialdb-mysql-9.7-windows-x64-0.1.1.zip`  
 **Build-ID:** `20260615-002`  
@@ -6,7 +6,7 @@
 **Released:** 2026-06-16  
 **GitHub Release:** [mysql/9.7/windows/v0.1.1](https://github.com/AxialDB/releases/releases/tag/mysql/9.7/windows/v0.1.1)
 
-Pre-release evaluation only. Not for production. See [EVALUATION_LICENSE.md](../EVALUATION_LICENSE.md).
+Pre-release build. Not for production.
 
 ### Install
 

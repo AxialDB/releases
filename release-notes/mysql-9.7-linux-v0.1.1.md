@@ -1,4 +1,4 @@
-## AxialDB 0.1.1 - MySQL 9.7 Linux x64 (eval)
+## AxialDB 0.1.1 - MySQL 9.7 Linux x64
 
 **Artifact:** `axialdb-mysql-9.7-linux-x64-0.1.1.zip`  
 **Build-ID:** `20260615-002`  
@@ -6,7 +6,7 @@
 **Released:** 2026-06-16  
 **GitHub Release:** [mysql/9.7/linux/v0.1.1](https://github.com/AxialDB/releases/releases/tag/mysql/9.7/linux/v0.1.1)
 
-Pre-release evaluation only. Not for production. See [EVALUATION_LICENSE.md](../EVALUATION_LICENSE.md).
+Pre-release build. Not for production.
 
 ### Install
 
@@ -17,7 +17,7 @@ Full steps are in the zip (`README.md`) and in the repo:
 
 ### Changes in 0.1.1
 
-Same kernel and plugin fixes as Windows v0.1.1 (see [windows release notes](mysql-9.7-windows-v0.1.1.md)).
+Same kernel and plugin fixes as Windows v0.1.1 (see [windows release notes](https://github.com/AxialDB/releases/blob/main/release-notes/mysql-9.7-windows-v0.1.1.md)).
 
 Linux-specific:
 

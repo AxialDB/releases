@@ -8,7 +8,7 @@ The current download is free to run within a cap: **5 views**, and **2 of those 
 
 Read the [terms of use](TERMS.md) before you install. The free version is provided as-is. There is no warranty and no support agreement. You are responsible for backups and for where you run it. We test each release, including CDC under load, and AxialDB does not write to your InnoDB tables. That is not a promise that nothing on your server can go wrong.
 
-The free release is **5.0.0**. Install that tag. Older tags (0.1.0 and 0.1.1) were published under a separate evaluation agreement and stay on that agreement. New downloads use [TERMS.md](TERMS.md).
+The free release is **5.0.0**. Install that tag.
 
 ## Install
 

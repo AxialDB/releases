@@ -3,14 +3,13 @@
 **Artifact:** `axialdb-mysql-9.7-linux-x64-5.0.0.zip`  
 **Build-ID:** `20260926-001`  
 **SHA256:** `6dfcba8e59858fd8e8f4aa2904577c084a26f9f7c7e1f97df54fa3e20b750d66`  
-**Released:** 2026-09-26  
-**GitHub Release:** [mysql/9.7/linux/v5.0.0](https://github.com/AxialDB/releases/releases/tag/mysql/9.7/linux/v5.0.0)
+**Released:** 2026-09-26
 
-Free release. Five views, two of them live. It does not expire. See [TERMS.md](../TERMS.md). Versions 0.1.0 and 0.1.1 remain evaluation builds under [EVALUATION_LICENSE.md](../EVALUATION_LICENSE.md).
+Free release. Five views, two of them live. It does not expire. [Terms of use](https://github.com/AxialDB/releases/blob/main/TERMS.md).
 
 ### Install
 
-[mysql/9.7/linux/README.md](../mysql/9.7/linux/README.md)
+[Linux install guide](https://github.com/AxialDB/releases/blob/main/mysql/9.7/linux/README.md)
 
 The zip contains the same guide, `axialdb-engine.service`, `TERMS.md`, and `cdc-limitations.md`.
 
@@ -19,7 +18,7 @@ The zip contains the same guide, `axialdb-engine.service`, `TERMS.md`, and `cdc-
 Same engine as the Windows 5.0.0 zip.
 
 - **Free caps.** 5 views, 2 live. A license file beside `axialdb.toml` raises the caps.
-- **Live views** from the MySQL binlog, on the subset in `cdc-limitations.md`.
+- **Live views** from the MySQL binlog, on the subset in [cdc-limitations.md](https://github.com/AxialDB/releases/blob/main/mysql/9.7/cdc-limitations.md).
 - **Status functions.** `axialdb_cdc_status` and `axialdb_cdc_publish`. Re-run `install-axialdb-mysql-functions.sql` after you replace the plugin.
 - The shipped unit file is `axialdb-engine.service`.
 
