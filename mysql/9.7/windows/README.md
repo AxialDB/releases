@@ -1,72 +1,72 @@
-# AxialDB for MySQL 9.7 - Windows x64 eval
+﻿# AxialDB for MySQL 9.7 — Windows x64
 
-Pre-release eval only. See [EVALUATION_LICENSE.md](../../../EVALUATION_LICENSE.md) and the [GitHub Release](https://github.com/AxialDB/releases/releases) for this version.
+AxialDB keeps a columnar copy of the tables your reports use, and answers the heavy queries from that copy. MySQL is the first database this release supports. Your InnoDB tables stay the system of record. AxialDB does not write to them.
 
-AxialDB adds an **AXIALDB** storage engine and a **sidecar** process (`axialdb-engine.exe`). **mysqld does not start the sidecar** (`helper.auto_spawn = false`). You must run **AxialDBEngine** as a Windows service before `axialdb_init()` or CTAS.
+This download is free for **5 views**, **2 of them live** from the binlog. It does not expire. Read [TERMS.md](TERMS.md) before you rely on it in production: the free version is provided as-is, with no support agreement. A license file on this same engine raises the caps and is how support is agreed. Contact info@axialdb.com.
 
-## Zip contents
+You need two processes. MySQL loads `ha_axialdb.dll`. A separate Windows service, **AxialDBEngine**, stores the copies and runs the analytical queries. MySQL does not start that service.
 
-| File | Purpose |
-|------|---------|
-| `ha_axialdb.dll` | Storage engine plugin |
-| `axialdb_mysql_bridge.dll` | Bridge (same folder as plugin) |
-| `axialdb-engine.exe` | Sidecar analytics engine |
-| `axialdb.toml` | Example config (copy elsewhere; edit paths) |
-| `install-axialdb-mysql-functions.sql` | UDF registration |
-| `VERSION` | Build-ID for support |
-| `README.md` | This file |
+## What you need first
 
-## Default paths (match `axialdb.toml`)
+- MySQL Server **9.7**, 64-bit, with the default plugin directory.
+- An administrator PowerShell for the install.
+- The account that runs MySQL (often `NT AUTHORITY\NetworkService`) must be able to write the data and log folders below.
 
-| Item | Path |
+For **live** views only, MySQL itself must be a row-based replica source:
+
+```sql
+-- These must already be true. Changing them needs a MySQL restart
+-- and, for GTID, a planned cutover. Do not flip them on a busy primary
+-- without reading the MySQL replication manual.
+SELECT @@binlog_format, @@binlog_row_image, @@binlog_row_metadata, @@gtid_mode;
+-- expect: ROW, FULL, FULL, ON
+```
+
+The replication user is created later, after the files are in place.
+
+## Where the files go
+
+These paths match the `axialdb.toml` in the zip. If you move anything, change the toml to match.
+
+| What | Path |
 |------|------|
-| Plugins | `C:\Program Files\MySQL\MySQL Server 9.7\lib\plugin\` |
+| Plugin and bridge | `C:\Program Files\MySQL\MySQL Server 9.7\lib\plugin\` |
 | Engine | `C:\Program Files\AxialDB\axialdb-engine.exe` |
-| Config | `C:\ProgramData\AxialDB\axialdb.toml` |
-| Data / catalog | `C:\ProgramData\AxialDB\data\` |
-| Engine log | `C:\ProgramData\AxialDB\logs\axialdb-engine.log` |
-| Sidecar service | **AxialDBEngine** (Windows SCM) |
-| MySQL datadir (optional) | `C:\ProgramData\MySQL\MySQL Server 9.7\Data` — janitor only; see below |
+| Config | `C:\ProgramData\AxialDB\mysql\axialdb.toml` |
+| Columnar data and catalog | `C:\ProgramData\AxialDB\mysql\data\` |
+| Engine log | `C:\ProgramData\AxialDB\mysql\logs\axialdb-engine.log` |
+| Service | `AxialDBEngine` |
 
-## Config (`axialdb.toml`)
+The zip also contains `install-axialdb-mysql-functions.sql`, `cdc-limitations.md`, `TERMS.md`, and `VERSION`.
 
-Copy to a permanent path; set **`AXIALDB_CONFIG`** to that file for **mysqld** and the sidecar.
+## Install
 
-| Setting | Default | Notes |
-|---------|---------|--------|
-| `data.axialdb_data_dir` | `C:/ProgramData/AxialDB/data` | Parquet + `catalog.db` |
-| `data.mysql_datadir` | `C:/ProgramData/MySQL/MySQL Server 9.7/Data` | **Optional.** Janitor-only: read-only check for `{schema}/{table}.sdi` under MySQL `@@datadir`. Removes stale **published** catalog rows when the MySQL table is gone. Omit the key (or unset **`AXIALDB_MYSQL_DATADIR`** on the engine) to skip. Does not affect CTAS or queries. |
-| `helper.executable` | `C:/Program Files/AxialDB/axialdb-engine.exe` | Must match SCM `binPath` |
-| `helper.service_name` | `AxialDBEngine` | Windows SCM name |
-| `helper.auto_spawn` | `false` | Sidecar via SCM, not mysqld |
-| `logging.file` | `C:/ProgramData/AxialDB/logs/axialdb-engine.log` | Engine log |
+Stop MySQL first (`Stop-Service MySQL97`, or your service name).
 
-Confirm MySQL datadir: `SELECT @@datadir;` in `mysql` and align `mysql_datadir` (forward slashes in TOML).
+1. Copy `ha_axialdb.dll` and `axialdb_mysql_bridge.dll` into the plugin folder. Both files must sit in that same folder. If the bridge is missing, MySQL reports error 126 when it loads the plugin.
 
-## Prerequisites
+2. Create `C:\Program Files\AxialDB\` and copy `axialdb-engine.exe` there.
 
-- MySQL Server **9.7** x64, default `plugin_dir` (no custom `plugin_dir` in `my.ini`).
-- Administrator rights for file copy, Machine env, and `sc.exe`.
-- MySQL service account must **write** to `axialdb_data_dir` and the log file.
-
-## Install (from zip)
-
-1. **Stop MySQL** (e.g. `Stop-Service MySQL97`).
-
-2. **Plugins** — copy both DLLs to `C:\Program Files\MySQL\MySQL Server 9.7\lib\plugin\`.
-
-3. **Engine** — create `C:\Program Files\AxialDB\`, copy `axialdb-engine.exe` there.
-
-4. **Config** — create `C:\ProgramData\AxialDB\data` and `\logs`. Copy `axialdb.toml` to `C:\ProgramData\AxialDB\axialdb.toml`. Edit paths if you changed step 3.
-
-5. **Machine environment** (required for **mysqld**):
-   - `AXIALDB_CONFIG` = `C:\ProgramData\AxialDB\axialdb.toml` (Machine scope).
-   - Prepend `C:\Program Files\MySQL\MySQL Server 9.7\lib\plugin` to Machine **PATH** (loads `axialdb_mysql_bridge.dll`; error 126 if missing).
-
-6. **Sidecar service** — Administrator PowerShell (paths must match your config):
+3. Create the data and log folders and copy the config:
 
    ```powershell
-   $config = "C:\ProgramData\AxialDB\axialdb.toml"
+   New-Item -ItemType Directory -Force -Path `
+     C:\ProgramData\AxialDB\mysql\data, `
+     C:\ProgramData\AxialDB\mysql\logs
+   Copy-Item axialdb.toml C:\ProgramData\AxialDB\mysql\axialdb.toml
+   ```
+
+4. Tell MySQL where the config is, and let it find the bridge DLL. Both are Machine environment variables. Set them, then start MySQL only after the sidecar exists (step 5).
+
+   - `AXIALDB_CONFIG` = `C:\ProgramData\AxialDB\mysql`
+   - Prepend `C:\Program Files\MySQL\MySQL Server 9.7\lib\plugin` to the Machine `PATH`.
+
+   The engine reads `AXIALDB_CONFIG` as the install root and opens `mysql\axialdb.toml` under it. That matches the comment at the top of the shipped toml.
+
+5. Create and start the sidecar. Administrator PowerShell:
+
+   ```powershell
+   $config = "C:\ProgramData\AxialDB\mysql\axialdb.toml"
    $engine = "C:\Program Files\AxialDB\axialdb-engine.exe"
    sc.exe create AxialDBEngine binPath= "`"$engine`" --config `"$config`"" start= auto DisplayName= "AxialDB Analytics Engine"
    sc.exe config AxialDBEngine obj= LocalSystem
@@ -74,25 +74,77 @@ Confirm MySQL datadir: `SELECT @@datadir;` in `mysql` and align `mysql_datadir` 
    Start-Service AxialDBEngine
    ```
 
-   If upgrading from an older drop that used **Task Scheduler** for `AxialDBEngine`, unregister that task first.
+   Confirm it is running: `Get-Service AxialDBEngine`.
 
-7. **Start MySQL**.
+6. Start MySQL.
 
-8. **Plugin + UDFs** (once per server):
+7. Register the plugin and the helper functions once:
 
    ```sql
    INSTALL PLUGIN axialdb SONAME 'ha_axialdb.dll';
    ```
 
-   Then run `install-axialdb-mysql-functions.sql`.
+   Then run `install-axialdb-mysql-functions.sql` in the `mysql` database.
 
-9. **Verify** (sidecar must be running):
+8. Check the link between MySQL and the sidecar:
 
    ```sql
    SELECT axialdb_init();
    ```
 
-## Uninstall
+   You want a short success string, not a connection error. If this fails, the service is down or `AXIALDB_CONFIG` is wrong. MySQL must be restarted after that variable is set.
+
+## First view
+
+A snapshot is the right first test. It copies the query result once. It does not follow later changes until you create it again.
+
+```sql
+CREATE DATABASE IF NOT EXISTS demo_perf;
+CREATE TABLE demo_perf.t ENGINE=AXIALDB AS
+SELECT 1 AS id, 'hello' AS msg;
+SELECT * FROM demo_perf.t;
+```
+
+For a real report, use the same shape over your own tables. `GROUP BY` belongs in the `SELECT` you run against the view, which is the fast path. The numbers we published are on [axialdb.com/measurements](https://axialdb.com/measurements.html).
+
+## Live view (binlog)
+
+Leave `[cdc] enabled = false` until the server settings above are true and this user exists:
+
+```sql
+CREATE USER 'axialdb_cdc'@'127.0.0.1' IDENTIFIED BY 'choose-a-password';
+GRANT REPLICATION SLAVE, REPLICATION CLIENT, SELECT ON *.* TO 'axialdb_cdc'@'127.0.0.1';
+```
+
+Put that password in `C:\ProgramData\AxialDB\mysql\axialdb.toml`, set `enabled = true`, and restart **AxialDBEngine**. The port in the toml must be your MySQL port.
+
+A live view is only for a narrow `CREATE` statement: one InnoDB table, or a fact table left-joined to its dimensions on the dimension primary key, plain source columns, primary keys included. If the statement is outside that list, `CREATE` fails. It does not silently make a snapshot. The full list is [cdc-limitations.md](cdc-limitations.md).
+
+```sql
+CREATE TABLE demo_perf.orders_av ENGINE=AXIALDB COMMENT='cdc' AS
+SELECT id, customer_id, total
+FROM demo_perf.orders;
+
+SELECT axialdb_cdc_status('demo_perf', 'orders_av');
+```
+
+Wait until the status is `healthy` before you trust a `SELECT`. Source inserts, updates, and deletes then show up on their own, usually within a few seconds. `TRUNCATE` on the source requires you to recreate the view. Do not update a primary key on a source table that a live view watches: the new key is applied and the old key is left behind.
+
+The fifth view is the last free one. The second live view is the last free live one. The next `CREATE` is refused. Nothing already created is dropped. A license file named `axialdb.lic`, placed beside `axialdb.toml`, raises those caps after you restart AxialDBEngine.
+
+## If something fails
+
+| What you see | What it usually means |
+|--------------|------------------------|
+| `axialdb_init()` cannot connect | AxialDBEngine is stopped, or MySQL was not restarted after `AXIALDB_CONFIG` was set |
+| Error 126 loading the plugin | `axialdb_mysql_bridge.dll` is not in the plugin folder, or that folder is not on the Machine `PATH` |
+| Error 1125, plugin `DELETED` | Another client still holds the old plugin. Disconnect it, or restart MySQL, then `INSTALL PLUGIN` again |
+| Live `CREATE` fails immediately | The `SELECT` is outside [cdc-limitations.md](cdc-limitations.md), or `[cdc] enabled` is still false |
+| Status stays `catching_up` | The sidecar is still applying the binlog. Reads fail closed until `healthy` |
+
+Engine log: `C:\ProgramData\AxialDB\mysql\logs\axialdb-engine.log`.
+
+## Remove it
 
 ```sql
 DROP FUNCTION IF EXISTS axialdb_init;
@@ -100,14 +152,4 @@ DROP FUNCTION IF EXISTS axialdb_drop_view;
 UNINSTALL PLUGIN axialdb;
 ```
 
-Stop and remove the service: `Stop-Service AxialDBEngine; sc.exe delete AxialDBEngine`. Remove DLLs, engine, config, and revert Machine `AXIALDB_CONFIG` / `PATH` if unused.
-
-Error **1125** on reinstall: close other MySQL clients or restart MySQL.
-
-## Git clone / eval dev (optional)
-
-Repo scripts use **ProgramData** engine path (`C:\ProgramData\AxialDB\bin\`) and install SCM via:
-
-`.\scripts\mysql\configure-mysql-eval-layout.ps1` (elevated), then `redeploy-mysql-eval.ps1 -BuildHelper`.
-
-That layout matches release behavior (SCM sidecar, `auto_spawn = false`); only install paths differ.
+Then `Stop-Service AxialDBEngine` and `sc.exe delete AxialDBEngine`. Delete the DLLs, the engine exe, and `C:\ProgramData\AxialDB\mysql` if you do not want the columnar files. Remove the Machine `AXIALDB_CONFIG` and the plugin folder from `PATH` if nothing else uses them.

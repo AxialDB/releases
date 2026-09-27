@@ -1,12 +1,11 @@
-# Example config - copy to a permanent path and edit for your environment.
-# Set AXIALDB_CONFIG to the absolute path of your installed copy.
+# Copy to C:\ProgramData\AxialDB\mysql\axialdb.toml
+# Machine AXIALDB_CONFIG must be C:\ProgramData\AxialDB (the install root).
+# The engine opens mysql\axialdb.toml under that root.
+# Live views: set [cdc] enabled = true only after the replication user exists.
+# Free version terms: TERMS.md in this zip.
 
 [data]
-axialdb_data_dir = "C:/ProgramData/AxialDB/data"
-# Janitor only (optional): MySQL @@datadir for orphan published-catalog cleanup.
-# Checks whether {schema}/{table}.sdi exists (read-only); does not parse or modify
-# MySQL metadata or data. Omit (or unset AXIALDB_MYSQL_DATADIR) to skip this pass.
-mysql_datadir = "C:/ProgramData/MySQL/MySQL Server 9.7/Data"
+axialdb_data_dir = "C:/ProgramData/AxialDB/mysql/data"
 
 [helper]
 # Sidecar runs as Windows SCM AxialDBEngine (required). mysqld only probes helper.listen.
@@ -49,4 +48,21 @@ server_query_timeout_secs = 30
 
 [logging]
 level = "info"
-file = "C:/ProgramData/AxialDB/logs/axialdb-engine.log"
+file = "C:/ProgramData/AxialDB/mysql/logs/axialdb-engine.log"
+
+[license]
+# Free zip. Paid: copy axialdb.lic beside this file and restart the engine.
+max_views = 5
+max_cdc_views = 2
+
+[cdc]
+# Binlog capture. Leave off until you create a replication user and set password.
+# GRANT REPLICATION SLAVE, REPLICATION CLIENT, SELECT ON *.* TO 'axialdb_cdc'@'127.0.0.1';
+enabled = false
+host = "127.0.0.1"
+port = 3306
+user = "axialdb_cdc"
+password = ""
+server_id = 19001
+interval_secs = 1
+tls = false
