@@ -1,4 +1,4 @@
-﻿# AxialDB for MySQL 9.7 — Windows x64
+# AxialDB for MySQL 9.7 — Windows x64
 
 AxialDB keeps a columnar copy of the tables your reports use, and answers the heavy queries from that copy. MySQL is the first database this release supports. Your InnoDB tables stay the system of record. AxialDB does not write to them.
 
@@ -8,9 +8,9 @@ You need two processes. MySQL loads `ha_axialdb.dll`. A separate Windows service
 
 ## What you need first
 
-- MySQL Server **9.7**, 64-bit, with the default plugin directory.
+- MySQL Server **9.7**, 64-bit, with the default plugin directory. The plugin must be built for the exact patch reported by `SELECT VERSION()`.
 - An administrator PowerShell for the install.
-- The account that runs MySQL (often `NT AUTHORITY\NetworkService`) must be able to write the data and log folders below.
+- The sidecar runs as **LocalSystem** and creates its own data and log files. MySQL only loads the plugin.
 
 For **live** views only, MySQL itself must be a row-based replica source:
 
@@ -37,13 +37,31 @@ These paths match the `axialdb.toml` in the zip. If you move anything, change th
 | Engine log | `C:\ProgramData\AxialDB\mysql\logs\axialdb-engine.log` |
 | Service | `AxialDBEngine` |
 
-The zip also contains `install-axialdb-mysql-functions.sql`, `cdc-limitations.md`, `TERMS.md`, and `VERSION`.
+The zip contains the engine, `axialdb_mysql_bridge.dll`, `install-axialdb-mysql-functions.sql`, `cdc-limitations.md`, `TERMS.md`, `THIRD-PARTY-NOTICES.md`, and `VERSION`. The plugin DLL is a separate file on the GitHub release, named for your MySQL patch.
 
 ## Install
 
 Stop MySQL first (`Stop-Service MySQL97`, or your service name).
 
-1. Copy `ha_axialdb.dll` and `axialdb_mysql_bridge.dll` into the plugin folder. Both files must sit in that same folder. If the bridge is missing, MySQL reports error 126 when it loads the plugin.
+1. The plugin is a separate file on the same GitHub release as this zip. It is not one file for every MySQL patch.
+
+   ```sql
+   SELECT VERSION();
+   ```
+
+   Download `ha_axialdb-<version>-windows-x64.dll`, where `<version>` is that string (`9.7.0` is `ha_axialdb-9.7.0-windows-x64.dll`). If that file is not on the release, this AxialDB build does not support that MySQL patch.
+
+   ```powershell
+   $Version = "9.7.0"   # numeric prefix from SELECT VERSION(), drop a -log suffix
+   Copy-Item ".\ha_axialdb-$Version-windows-x64.dll" `
+     "C:\Program Files\MySQL\MySQL Server 9.7\lib\plugin\ha_axialdb.dll"
+   Copy-Item .\axialdb_mysql_bridge.dll `
+     "C:\Program Files\MySQL\MySQL Server 9.7\lib\plugin\"
+   ```
+
+   Do not rename the bridge. If it is missing, MySQL reports error 126 when it loads the plugin.
+
+   When you later move to another 9.7 patch, replace only `ha_axialdb.dll` with the file for the new `SELECT VERSION()`, then restart MySQL. Leave the engine and the bridge in place.
 
 2. Create `C:\Program Files\AxialDB\` and copy `axialdb-engine.exe` there.
 
@@ -54,14 +72,17 @@ Stop MySQL first (`Stop-Service MySQL97`, or your service name).
      C:\ProgramData\AxialDB\mysql\data, `
      C:\ProgramData\AxialDB\mysql\logs
    Copy-Item axialdb.toml C:\ProgramData\AxialDB\mysql\axialdb.toml
+   icacls C:\ProgramData\AxialDB\mysql\axialdb.toml /inheritance:r /grant:r "SYSTEM:(F)" "Administrators:(F)"
    ```
+
+   The last command keeps the replication password, once you add it, readable only by SYSTEM and administrators.
 
 4. Tell MySQL where the config is, and let it find the bridge DLL. Both are Machine environment variables. Set them, then start MySQL only after the sidecar exists (step 5).
 
-   - `AXIALDB_CONFIG` = `C:\ProgramData\AxialDB\mysql`
+   - `AXIALDB_CONFIG` = `C:\ProgramData\AxialDB`
    - Prepend `C:\Program Files\MySQL\MySQL Server 9.7\lib\plugin` to the Machine `PATH`.
 
-   The engine reads `AXIALDB_CONFIG` as the install root and opens `mysql\axialdb.toml` under it. That matches the comment at the top of the shipped toml.
+   The engine reads `AXIALDB_CONFIG` as the install root and opens `mysql\axialdb.toml` under it. That matches the comment at the top of the shipped toml. If plugin load still fails with error 126 after MySQL restarts, reboot once so the service sees the new Machine `PATH`.
 
 5. Create and start the sidecar. Administrator PowerShell:
 
@@ -121,16 +142,22 @@ Put that password in `C:\ProgramData\AxialDB\mysql\axialdb.toml`, set `enabled =
 A live view is only for a narrow `CREATE` statement: one InnoDB table, or a fact table left-joined to its dimensions on the dimension primary key, plain source columns, primary keys included. If the statement is outside that list, `CREATE` fails. It does not silently make a snapshot. The full list is [cdc-limitations.md](cdc-limitations.md).
 
 ```sql
-CREATE TABLE demo_perf.orders_av ENGINE=AXIALDB COMMENT='cdc' AS
+-- Replace your_db.orders with an InnoDB table you already have.
+-- Include its primary key. See cdc-limitations.md.
+CREATE TABLE your_db.orders_av ENGINE=AXIALDB COMMENT='cdc' AS
 SELECT id, customer_id, total
-FROM demo_perf.orders;
+FROM your_db.orders;
 
-SELECT axialdb_cdc_status('demo_perf', 'orders_av');
+SELECT axialdb_cdc_status('your_db', 'orders_av');
 ```
 
 Wait until the status is `healthy` before you trust a `SELECT`. Source inserts, updates, and deletes then show up on their own, usually within a few seconds. `TRUNCATE` on the source requires you to recreate the view. Do not update a primary key on a source table that a live view watches: the new key is applied and the old key is left behind.
 
 The fifth view is the last free one. The second live view is the last free live one. The next `CREATE` is refused. Nothing already created is dropped. A license file named `axialdb.lic`, placed beside `axialdb.toml`, raises those caps after you restart AxialDBEngine.
+
+## If you already installed 0.1.x
+
+Those builds used `C:\ProgramData\AxialDB\axialdb.toml` and `C:\ProgramData\AxialDB\data`. Do not point this release at those paths. Remove the old plugin and service, install this zip on the paths above, and create the views again.
 
 ## If something fails
 
@@ -147,8 +174,11 @@ Engine log: `C:\ProgramData\AxialDB\mysql\logs\axialdb-engine.log`.
 ## Remove it
 
 ```sql
+DROP TABLE IF EXISTS your_db.orders_av;
 DROP FUNCTION IF EXISTS axialdb_init;
 DROP FUNCTION IF EXISTS axialdb_drop_view;
+DROP FUNCTION IF EXISTS axialdb_cdc_publish;
+DROP FUNCTION IF EXISTS axialdb_cdc_status;
 UNINSTALL PLUGIN axialdb;
 ```
 

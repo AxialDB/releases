@@ -11,7 +11,7 @@ Free release. Five views, two of them live. It does not expire. [Terms of use](h
 
 [Windows install guide](https://github.com/AxialDB/releases/blob/main/mysql/9.7/windows/README.md)
 
-The zip contains the same guide, plus `TERMS.md` and `cdc-limitations.md`.
+The zip contains the engine, the bridge, `TERMS.md`, and `cdc-limitations.md`. The MySQL plugin is a separate file on this release: `ha_axialdb-<version>-windows-x64.dll`. The [install guide](https://github.com/AxialDB/releases/blob/main/mysql/9.7/windows/README.md) says how to match it to `SELECT VERSION()` and copy it as `ha_axialdb.dll`.
 
 ### Changes in 5.0.0
 
@@ -20,6 +20,6 @@ The zip contains the same guide, plus `TERMS.md` and `cdc-limitations.md`.
 - **Status functions.** `axialdb_cdc_status` and `axialdb_cdc_publish`. Re-run `install-axialdb-mysql-functions.sql` after you replace the plugin.
 - **Install paths** in the guide match the `axialdb.toml` in the zip. `[cdc] enabled` stays false until the replication user exists.
 
-### Upgrade from 0.1.1
+### If you already installed 0.1.x
 
-Stop MySQL and **AxialDBEngine**. Replace `ha_axialdb.dll`, `axialdb_mysql_bridge.dll`, and `axialdb-engine.exe`. Re-run the install SQL. If you already edited `axialdb.toml`, add the `[license]` and `[cdc]` sections from the zip instead of overwriting the file. Start **AxialDBEngine**, then MySQL.
+Those builds used different paths. Do not point this release at the old config or data directory. Remove the old plugin and service, install this zip on the paths in the guide, and create the views again.

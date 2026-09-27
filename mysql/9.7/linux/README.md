@@ -8,7 +8,8 @@ You need two processes. MySQL loads `ha_axialdb.so`. A separate systemd service,
 
 ## What you need first
 
-- MySQL Server **9.7**, 64-bit. The plugin must match that server.
+- MySQL Server **9.7**, 64-bit. The plugin must be built for the exact patch reported by `SELECT VERSION()`.
+- Linux x86_64 with glibc **2.35** or newer (Ubuntu 22.04 and newer glibc distros, including Debian 12 and Arch). Alpine will not run it.
 - `sudo`.
 - The `mysql` user must be able to write `/var/lib/axialdb` and `/var/log/axialdb`. If those directories are owned by root, the sidecar exits at once and systemd stays at `activating`.
 
@@ -34,16 +35,28 @@ These paths match the `axialdb.toml` in the zip.
 | Engine log | `/var/log/axialdb/axialdb-engine.log` |
 | Service | `axialdb-engine.service` |
 
-The zip also contains `install-axialdb-mysql-functions.sql`, `cdc-limitations.md`, `TERMS.md`, and `VERSION`.
+The zip contains the engine, `libaxialdb_mysql_bridge.so`, `install-axialdb-mysql-functions.sql`, `cdc-limitations.md`, `TERMS.md`, `THIRD-PARTY-NOTICES.md`, and `VERSION`. The plugin `.so` is a separate file on the GitHub release, named for your MySQL patch.
 
 ## Install
 
-1. Both shared libraries go in the plugin directory. The plugin loads the bridge from that same directory.
+1. The plugin is a separate file on the same GitHub release as this zip. It is not one file for every MySQL patch.
+
+   ```sql
+   SELECT VERSION();
+   ```
+
+   Download `ha_axialdb-<version>-linux-x64.so`, where `<version>` is that string (`9.7.0` is `ha_axialdb-9.7.0-linux-x64.so`). If that file is not on the release, this AxialDB build does not support that MySQL patch.
 
    ```bash
+   VERSION=9.7.0   # numeric prefix from SELECT VERSION(), drop a -log suffix
    PLUGIN_DIR=$(mysql -N -e "SELECT @@plugin_dir;")
-   sudo cp ha_axialdb.so libaxialdb_mysql_bridge.so "$PLUGIN_DIR/"
+   sudo cp "ha_axialdb-${VERSION}-linux-x64.so" "$PLUGIN_DIR/ha_axialdb.so"
+   sudo cp libaxialdb_mysql_bridge.so "$PLUGIN_DIR/"
    ```
+
+   The bridge comes from the zip. Do not rename it. The plugin loads `libaxialdb_mysql_bridge.so` from that same directory.
+
+   When you later move to another 9.7 patch, replace only `ha_axialdb.so` with the file for the new `SELECT VERSION()`, then restart MySQL. Leave the engine and the bridge in place.
 
 2. Engine:
 
@@ -58,8 +71,12 @@ The zip also contains `install-axialdb-mysql-functions.sql`, `cdc-limitations.md
    ```bash
    sudo mkdir -p /etc/axialdb /var/lib/axialdb/data /var/log/axialdb
    sudo cp axialdb.toml /etc/axialdb/axialdb.toml
+   sudo chown root:mysql /etc/axialdb/axialdb.toml
+   sudo chmod 640 /etc/axialdb/axialdb.toml
    sudo chown -R mysql:mysql /var/lib/axialdb /var/log/axialdb
    ```
+
+   `chmod 640` keeps the replication password, once you add it, readable by root and the `mysql` group only. The sidecar runs as `mysql`.
 
    The shipped toml uses port **3306**. If your MySQL listens elsewhere, change `[cdc] port` before you enable capture.
 
@@ -134,16 +151,22 @@ Put the password in `/etc/axialdb/axialdb.toml`, set `enabled = true`, and `sudo
 A live view accepts one InnoDB table, or a fact table left-joined to its dimensions on the dimension primary key, with plain source columns and the primary keys included. Anything else fails the `CREATE`. It does not silently become a snapshot. Details: [cdc-limitations.md](cdc-limitations.md).
 
 ```sql
-CREATE TABLE demo_perf.orders_av ENGINE=AXIALDB COMMENT='cdc' AS
+-- Replace your_db.orders with an InnoDB table you already have.
+-- Include its primary key. See cdc-limitations.md.
+CREATE TABLE your_db.orders_av ENGINE=AXIALDB COMMENT='cdc' AS
 SELECT id, customer_id, total
-FROM demo_perf.orders;
+FROM your_db.orders;
 
-SELECT axialdb_cdc_status('demo_perf', 'orders_av');
+SELECT axialdb_cdc_status('your_db', 'orders_av');
 ```
 
 Wait for `healthy`. Until then a `SELECT` on that table is refused. Source inserts, updates, and deletes then apply on their own, usually within a few seconds. `TRUNCATE` on the source means recreate the view. Do not change a primary key on a watched source table: the new key is applied and the old key remains.
 
 A sixth view, or a third live view, is refused. Existing views stay. To raise the cap, place `axialdb.lic` beside `/etc/axialdb/axialdb.toml` and restart `axialdb-engine`.
+
+## If you already installed 0.1.x
+
+Remove the old plugin, unit, and engine, then install this zip on the paths above and create the views again. Do not reuse an old config whose paths differ from this toml.
 
 ## If the sidecar will not start
 
@@ -158,11 +181,16 @@ systemctl is-active axialdb-engine
 
 `ls -ld /var/log/axialdb /var/lib/axialdb` should show `mysql mysql`.
 
+On Ubuntu, AppArmor can stop mysqld from reading `/etc/axialdb/axialdb.toml` or connecting to `127.0.0.1:9742`. If `axialdb_init()` fails and the sidecar is active, check `journalctl -u mysql` and the AppArmor denials before changing the unit.
+
 ## Remove it
 
 ```sql
+DROP TABLE IF EXISTS your_db.orders_av;
 DROP FUNCTION IF EXISTS axialdb_init;
 DROP FUNCTION IF EXISTS axialdb_drop_view;
+DROP FUNCTION IF EXISTS axialdb_cdc_publish;
+DROP FUNCTION IF EXISTS axialdb_cdc_status;
 UNINSTALL PLUGIN axialdb;
 ```
 

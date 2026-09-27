@@ -19,12 +19,12 @@ The free release is **5.0.0**. Install that tag.
 | MySQL 9.7 | Windows x64 | [mysql/9.7/windows/README.md](mysql/9.7/windows/README.md) |
 | MySQL 9.7 | Linux x64 | [mysql/9.7/linux/README.md](mysql/9.7/linux/README.md) |
 
-Binaries are attached to [GitHub Releases](https://github.com/AxialDB/releases/releases). The guide in the zip is the same text as the links above. Each zip also contains `TERMS.md` and `cdc-limitations.md`.
+Binaries are attached to [GitHub Releases](https://github.com/AxialDB/releases/releases). The engine and the bridge are in the zip. The MySQL plugin is a separate file on that same release, named for your exact server patch (`ha_axialdb-<version>-windows-x64.dll` or `ha_axialdb-<version>-linux-x64.so`). The install guide says how to copy it into place. Each zip also contains `TERMS.md` and `cdc-limitations.md`.
 
 Published builds: [RELEASES.md](RELEASES.md).
 
 ## Paid use
 
-More than 5 views, more than 2 live views, ODBC for Tableau or Power BI, or a support agreement: info@axialdb.com. You receive `axialdb.lic`, place it beside `axialdb.toml`, and restart the AxialDB service.
+More than 5 views, more than 2 live views, or a support agreement: info@axialdb.com. You receive `axialdb.lic`, place it beside `axialdb.toml`, and restart the AxialDB service.
 
 Copyright (c) 2026 IT ART Inc.

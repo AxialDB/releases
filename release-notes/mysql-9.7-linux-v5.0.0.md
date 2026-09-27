@@ -11,7 +11,7 @@ Free release. Five views, two of them live. It does not expire. [Terms of use](h
 
 [Linux install guide](https://github.com/AxialDB/releases/blob/main/mysql/9.7/linux/README.md)
 
-The zip contains the same guide, `axialdb-engine.service`, `TERMS.md`, and `cdc-limitations.md`.
+The zip contains the engine, the bridge, `axialdb-engine.service`, `TERMS.md`, and `cdc-limitations.md`. The MySQL plugin is a separate file on this release: `ha_axialdb-<version>-linux-x64.so`. The [install guide](https://github.com/AxialDB/releases/blob/main/mysql/9.7/linux/README.md) says how to match it to `SELECT VERSION()` and copy it as `ha_axialdb.so`. Linux x86_64 needs glibc 2.35 or newer.
 
 ### Changes in 5.0.0
 
@@ -22,6 +22,6 @@ Same engine as the Windows 5.0.0 zip.
 - **Status functions.** `axialdb_cdc_status` and `axialdb_cdc_publish`. Re-run `install-axialdb-mysql-functions.sql` after you replace the plugin.
 - The shipped unit file is `axialdb-engine.service`.
 
-### Upgrade from 0.1.1
+### If you already installed 0.1.x
 
-Stop MySQL and `axialdb-engine`. Replace `ha_axialdb.so`, `libaxialdb_mysql_bridge.so`, and `/usr/local/axialdb/axialdb-engine`. Re-run the install SQL. If you already edited `/etc/axialdb/axialdb.toml`, add the `[license]` and `[cdc]` sections from the zip instead of overwriting the file. Start the engine, then MySQL.
+Remove the old plugin, unit, and engine, then install this zip on the paths in the guide and create the views again. Do not reuse an old config whose paths differ.
