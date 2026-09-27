@@ -3,8 +3,7 @@
 **Artifact:** `axialdb-mysql-9.7-windows-x64-0.1.1.zip`  
 **Build-ID:** `20260615-002`  
 **SHA256:** `a411517282411ae47054b8763e672bf73cbf1af8621e3a2cd232c78f6656b7be`  
-**Released:** 2026-06-16  
-**GitHub Release:** [mysql/9.7/windows/v0.1.1](https://github.com/AxialDB/releases/releases/tag/mysql/9.7/windows/v0.1.1)
+**Released:** 2026-06-16
 
 Pre-release build. Not for production.
 

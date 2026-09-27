@@ -3,8 +3,7 @@
 **Artifact:** `axialdb-mysql-9.7-linux-x64-0.1.1.zip`  
 **Build-ID:** `20260615-002`  
 **SHA256:** `d7867eb5e8a2c671c091c0932bc082bc806c6e53c1d3ba69c68999a8902f084d`  
-**Released:** 2026-06-16  
-**GitHub Release:** [mysql/9.7/linux/v0.1.1](https://github.com/AxialDB/releases/releases/tag/mysql/9.7/linux/v0.1.1)
+**Released:** 2026-06-16
 
 Pre-release build. Not for production.
 

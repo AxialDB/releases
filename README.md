@@ -2,6 +2,8 @@
 
 Prebuilt AxialDB for the databases we support. MySQL is the first. This repository has no source code. The analytical engine is private. The binlog reader it uses, [ce-stream](https://github.com/AxialDB/ce-stream), is a separate open-source project.
 
+Website: [axialdb.com](https://axialdb.com/).
+
 ## Free version
 
 The current download is free to run within a cap: **5 views**, and **2 of those may be live** (kept up from the database change log). It does not expire. It is the same engine a paid license unlocks. The license file raises the cap and is how a support agreement is made. It does not add a second product.
