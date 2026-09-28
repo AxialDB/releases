@@ -35,17 +35,17 @@ These paths match the `axialdb.toml` in the zip.
 | Engine log | `/var/log/axialdb/axialdb-engine.log` |
 | Service | `axialdb-engine.service` |
 
-The zip contains the engine, `install-axialdb-mysql-functions.sql`, `cdc-limitations.md`, `TERMS.md`, `THIRD-PARTY-NOTICES.md`, and `VERSION`. The plugin `.so` and `libaxialdb_mysql_bridge.so` are in this folder. The plugin name includes your MySQL patch.
+The zip contains the engine, `libaxialdb_mysql_bridge.so`, the plugin `.so` for each MySQL patch supported when the zip was built, `axialdb-engine.service`, `install-axialdb-mysql-functions.sql`, `cdc-limitations.md`, `TERMS.md`, `THIRD-PARTY-NOTICES.md`, and `VERSION`. The same plugin and bridge files are in this folder on GitHub. A plugin for a later 9.7 patch is added to that folder, not to the zip. The plugin name includes your MySQL patch.
 
 ## Install
 
-1. The plugin file is in this folder. Its name includes the MySQL patch. There is not one plugin for every patch.
+1. The plugin file is in the zip and in this folder. Its name includes the MySQL patch. There is not one plugin for every patch.
 
    ```sql
    SELECT VERSION();
    ```
 
-   Use `ha_axialdb-<version>-linux-x64.so`, where `<version>` is that string (`9.7.0` is `ha_axialdb-9.7.0-linux-x64.so` in this folder). If that file is not here, this AxialDB build does not support that MySQL patch.
+   Use `ha_axialdb-<version>-linux-x64.so`, where `<version>` is that string (`9.7.0` is `ha_axialdb-9.7.0-linux-x64.so`). If that file is not in the zip or in this folder on GitHub, this AxialDB build does not support that MySQL patch.
 
    ```bash
    VERSION=9.7.0   # numeric prefix from SELECT VERSION(), drop a -log suffix
@@ -54,7 +54,7 @@ The zip contains the engine, `install-axialdb-mysql-functions.sql`, `cdc-limitat
    sudo cp libaxialdb_mysql_bridge.so "$PLUGIN_DIR/"
    ```
 
-   The bridge comes from the zip. Do not rename it. The plugin loads `libaxialdb_mysql_bridge.so` from that same directory.
+   Do not rename the bridge. The plugin loads `libaxialdb_mysql_bridge.so` from that same directory.
 
    When you later move to another 9.7 patch, replace only `ha_axialdb.so` with the file for the new `SELECT VERSION()`, then restart MySQL. Leave the engine and the bridge in place. Fixes are built for the newest 9.7 patch on the release. Older plugin files stay available and are not rebuilt.
 
@@ -135,7 +135,7 @@ SELECT 1 AS id, 'hello' AS msg;
 SELECT * FROM demo_perf.t;
 ```
 
-`GROUP BY` belongs in the query you run against the view. That is the fast path. The numbers we published, including the WSL2 set, are on [axialdb.com/measurements](https://axialdb.com/measurements.html). WSL2 is not a bare-metal Linux server. Measure on yours.
+`GROUP BY` belongs in the query you run against the view. That is the fast path. The numbers we published, including the WSL2 set, are on [axialdb.com/measurements](https://axialdb.com/measurements). WSL2 is not a bare-metal Linux server. Measure on yours.
 
 ## Live view (binlog)
 

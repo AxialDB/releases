@@ -19,7 +19,9 @@ The free release is **5.0.0**. Install that tag.
 | MySQL 9.7 | Windows x64 | [mysql/9.7/windows/README.md](mysql/9.7/windows/README.md) |
 | MySQL 9.7 | Linux x64 | [mysql/9.7/linux/README.md](mysql/9.7/linux/README.md) |
 
-Binaries for the engine are attached to [GitHub Releases](https://github.com/AxialDB/releases/releases). The MySQL plugin and the bridge are in this repository, next to the install guide: `ha_axialdb-<version>-windows-x64.dll` or `ha_axialdb-<version>-linux-x64.so`, plus `axialdb_mysql_bridge.dll` or `libaxialdb_mysql_bridge.so`. The guide says how to copy the plugin into place. Each zip also contains `TERMS.md` and `cdc-limitations.md`.
+You need a MySQL 9.7 server you run yourself. Managed services such as Amazon RDS and Aurora cannot load a storage-engine plugin. Linux needs x86_64 with glibc 2.35 or newer.
+
+The zips are attached to [GitHub Releases](https://github.com/AxialDB/releases/releases). Each has the engine, the bridge, the MySQL plugin, `TERMS.md`, and `cdc-limitations.md`. The plugin and the bridge are also in this repository, next to the install guide: `ha_axialdb-<version>-windows-x64.dll` or `ha_axialdb-<version>-linux-x64.so`, plus `axialdb_mysql_bridge.dll` or `libaxialdb_mysql_bridge.so`. The guide says how to copy the plugin into place.
 
 Published builds: [RELEASES.md](RELEASES.md).
 

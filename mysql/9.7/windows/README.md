@@ -37,19 +37,19 @@ These paths match the `axialdb.toml` in the zip. If you move anything, change th
 | Engine log | `C:\ProgramData\AxialDB\mysql\logs\axialdb-engine.log` |
 | Service | `AxialDBEngine` |
 
-The zip contains the engine, `install-axialdb-mysql-functions.sql`, `cdc-limitations.md`, `TERMS.md`, `THIRD-PARTY-NOTICES.md`, and `VERSION`. The plugin DLL and `axialdb_mysql_bridge.dll` are in this folder. The plugin name includes your MySQL patch.
+The zip contains the engine, `axialdb_mysql_bridge.dll`, the plugin DLL for each MySQL patch supported when the zip was built, `install-axialdb-mysql-functions.sql`, `cdc-limitations.md`, `TERMS.md`, `THIRD-PARTY-NOTICES.md`, and `VERSION`. The same plugin and bridge files are in this folder on GitHub. A plugin for a later 9.7 patch is added to that folder, not to the zip. The plugin name includes your MySQL patch.
 
 ## Install
 
 Stop MySQL first (`Stop-Service MySQL97`, or your service name).
 
-1. The plugin file is in this folder. Its name includes the MySQL patch. There is not one plugin for every patch.
+1. The plugin file is in the zip and in this folder. Its name includes the MySQL patch. There is not one plugin for every patch.
 
    ```sql
    SELECT VERSION();
    ```
 
-   Use `ha_axialdb-<version>-windows-x64.dll`, where `<version>` is that string (`9.7.0` is `ha_axialdb-9.7.0-windows-x64.dll` in this folder). If that file is not here, this AxialDB build does not support that MySQL patch.
+   Use `ha_axialdb-<version>-windows-x64.dll`, where `<version>` is that string (`9.7.0` is `ha_axialdb-9.7.0-windows-x64.dll`). If that file is not in the zip or in this folder on GitHub, this AxialDB build does not support that MySQL patch.
 
    ```powershell
    $Version = "9.7.0"   # numeric prefix from SELECT VERSION(), drop a -log suffix
@@ -126,7 +126,7 @@ SELECT 1 AS id, 'hello' AS msg;
 SELECT * FROM demo_perf.t;
 ```
 
-For a real report, use the same shape over your own tables. `GROUP BY` belongs in the `SELECT` you run against the view, which is the fast path. The numbers we published are on [axialdb.com/measurements](https://axialdb.com/measurements.html).
+For a real report, use the same shape over your own tables. `GROUP BY` belongs in the `SELECT` you run against the view, which is the fast path. The numbers we published are on [axialdb.com/measurements](https://axialdb.com/measurements).
 
 ## Live view (binlog)
 
