@@ -9,7 +9,7 @@ Artifact checksums and install docs for each drop. Each zip is attached to its [
 | 6.0.0 | Engine | windows-x64 | 20261027-001 | 2026-10-27 | `e2261228…6fde7` | [engine/v6.0.0](https://github.com/AxialDB/releases/releases/tag/engine/v6.0.0) · [notes](release-notes/engine-v6.0.0.md) |
 | 6.0.0 | Engine | linux-x64 | 20261027-001 | 2026-10-27 | `f9daf76b…fb3b7` | [engine/v6.0.0](https://github.com/AxialDB/releases/releases/tag/engine/v6.0.0) · [notes](release-notes/engine-v6.0.0.md) |
 | 6.0.0 | MySQL 9.7 shim | windows-x64 | 20261026-002 | 2026-10-27 | `26850543…e146d` | [mysql/9.7/v6.0.0](https://github.com/AxialDB/releases/releases/tag/mysql/9.7/v6.0.0) · [notes](release-notes/mysql-9.7-v6.0.0.md) |
-| 6.0.0 | MySQL 9.7 shim | linux-x64 | 20261026-002 | 2026-10-27 | `46671c7f…7d49e` | [mysql/9.7/v6.0.0](https://github.com/AxialDB/releases/releases/tag/mysql/9.7/v6.0.0) · [notes](release-notes/mysql-9.7-v6.0.0.md) |
+| 6.0.0 | MySQL 9.7 shim | linux-x64 | 20261026-002 | 2026-10-27 | `46671c7f…7e49e` | [mysql/9.7/v6.0.0](https://github.com/AxialDB/releases/releases/tag/mysql/9.7/v6.0.0) · [notes](release-notes/mysql-9.7-v6.0.0.md) |
 | 5.0.0 | MySQL 9.7 | windows-x64 | 20260927-006 | 2026-09-27 | `5c65f7ea…95f0` | [v5.0.0](https://github.com/AxialDB/releases/releases/tag/mysql/9.7/windows/v5.0.0) · [notes](release-notes/mysql-9.7-windows-v5.0.0.md) |
 | 5.0.0 | MySQL 9.7 | linux-x64 | 20260927-004 | 2026-09-27 | `294b01d4…8aaf` | [v5.0.0](https://github.com/AxialDB/releases/releases/tag/mysql/9.7/linux/v5.0.0) · [notes](release-notes/mysql-9.7-linux-v5.0.0.md) |
 
