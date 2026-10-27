@@ -1,0 +1,11 @@
+{
+  "axialdb_version": "6.0.0",
+  "product": "engine",
+  "platform": "windows-x64",
+  "build_id": "20261026-002",
+  "artifact": "axialdb-engine-6.0.0-windows-x64.zip",
+  "sha256": "fdfd6cbdb8c3900a9ab2373c614a85376005a0b5f0e11ef110d02e8f135bfae8",
+  "released_at": "2026-10-27T00:00:00Z",
+  "github_release_tag": "engine/v6.0.0",
+  "notes": "Free release. 5 tables, 2 of them live. Engine, command line, ODBC and JDBC drivers. This download uses TERMS.md."
+}

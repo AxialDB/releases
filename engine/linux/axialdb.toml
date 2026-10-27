@@ -1,0 +1,131 @@
+# The engine's config: copy to /etc/axialdb/axialdb.toml
+# (axialdb-engine.service starts the engine with --config /etc/axialdb/axialdb.toml).
+# One [sources.<name>] entry per database the engine reads: a MySQL server
+# below, a MongoDB replica set commented out at the end. A MySQL server with
+# the AxialDB plugin has a small file of its own, axialdb-shim.toml, which
+# names its entry here; that file comes with the MySQL shim package.
+# Live tables from MySQL: set user and capture_user only after both accounts exist.
+# Free version terms: TERMS.md in this zip.
+
+[data]
+axialdb_data_dir = "/var/lib/axialdb/data"
+
+[helper]
+# The engine runs as the systemd service axialdb-engine. listen is where it takes connections.
+auto_spawn = false
+service_name = "axialdb-engine"
+executable = "/usr/local/axialdb/axialdb-engine"
+listen = "127.0.0.1:9742"
+
+[catalog]
+database = "catalog.db"
+
+[retention]
+unused_days = 30
+janitor_interval_secs = 3600
+dry_run = false
+
+[engine]
+target_partitions = 0
+# How often captured changes are applied to live tables, on every source.
+live_apply_interval_secs = 1
+# How often the stored changes of live tables are checked for tidying.
+live_compact_interval_secs = 3600
+# Advanced: large transactions. The defaults need no change.
+# Capture passes a long transaction on in parts of this size.
+# part_max_rows = 10000
+# part_max_bytes = 16777216
+# Change log: what stays in memory; anything larger is read from disk.
+# change_log_frame_in_memory_max_bytes = 1048576
+# change_log_memory_budget_bytes = 268435456
+
+[engine.tuning]
+batch_size = 8192
+skip_partial_agg_probe_rows = 100
+skip_partial_agg_probe_ratio = 0.8
+parquet_pruning = true
+ipc_coalesce_target_rows = 65536
+
+[parquet]
+max_row_group_size_bytes = 262144
+compression = "zstd"
+
+[execution]
+embedded_enabled = false
+default_execution = "sidecar"
+default_cardinality = "auto"
+default_materialization = "snapshot"
+
+[ipc]
+query_timeout_secs = 300
+server_query_timeout_secs = 30
+
+[logging]
+level = "info"
+file = "/var/log/axialdb/axialdb-engine.log"
+
+[license]
+# Free: 5 tables, 2 of them live. A license: copy axialdb.lic beside this file and restart the engine.
+max_views = 5
+max_cdc_views = 2
+
+# Connections from other machines. With listen on 127.0.0.1 none of this is
+# needed: the MySQL server and the clients on this machine connect as they are.
+# To let a MySQL server or a client on another machine in, listen on an address
+# they can reach and set the secrets: client_secret here for the CLI, the SDK,
+# ODBC, and JDBC, and shim_secret under each [sources.<name>] whose server is
+# on another machine. The engine does not start listening beyond this machine
+# with no secret at all, unless allow_open_network = true.
+# Without tls_cert and tls_key the rows of a create and the results of a query
+# cross the network in clear text.
+[access]
+# client_secret = ""
+# tls_cert = "engine-cert.pem"
+# tls_key = "engine-key.pem"
+# allow_open_network = false
+
+# Where a new table lands. Default for every source. A key set under
+# [sources.<name>] wins for that source. AxialDB names are lowercase.
+[default_naming]
+mirror_host_schema = true     # schema = the host database name
+target_schema = "analytics"   # used only when mirror_host_schema = false
+prefix_source = false         # table name starts with the source name
+prefix_host_schema = false    # table name starts with the host database (only without mirroring)
+
+# One [sources.<name>] entry per database instance. The name is yours; it
+# shows in 'axialdb sources' and is fixed once a table uses it.
+# A MySQL 9.7 server, with or without the AxialDB plugin.
+[sources.mysql]
+kind = "mysql"
+# The secret this server's plugin proves when the server is on another machine
+# than the engine. The same text goes into the file that secret_file names in
+# that server's axialdb-shim.toml.
+# shim_secret = ""
+# Main instance. The engine runs its own statements here with this account:
+# it reads the source tables' columns and keys and the server's position for
+# every live table, also one created from inside MySQL, and it runs creates
+# and drops for 'axialdb create-table' and 'axialdb drop-table'. It needs
+# SELECT on the source tables and SHOW VIEW on the views a live query reads;
+# for the command line also CREATE, DROP, and INSERT. Not needed when only
+# snapshot tables are created, and only from inside MySQL.
+host = "127.0.0.1"
+port = 3306
+user = ""
+password = ""
+# Capture: where the binlog is read for live tables, normally a replica.
+# Add capture_host and capture_port to read from a replica; without them
+# capture reads from the main instance. A source without capture_user has
+# snapshot tables only.
+# Live tables: create the replication user, then set capture_user and capture_password.
+# GRANT REPLICATION SLAVE, REPLICATION CLIENT, SELECT ON *.* TO 'axialdb_cdc'@'127.0.0.1';
+capture_user = ""
+capture_password = ""
+capture_server_id = 19001     # replication client id, unique among this server's replicas
+# capture_tls = false
+
+# A MongoDB replica set (8.0 or newer). The account needs the read role on
+# the databases the tables read. Live tables also need post-images on each
+# source collection; see live-tables.md.
+# [sources.mongo]
+# kind = "mongo"
+# uri = "mongodb://axialdb:password@db1.example.com:27017,db2.example.com:27017/?replicaSet=rs0"

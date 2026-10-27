@@ -1,192 +1,120 @@
-# AxialDB for MySQL 9.7 — Linux x64
+# AxialDB for MySQL 9.7 — Linux x64 (MySQL shim package)
 
-AxialDB keeps a columnar copy of the tables your reports use, and answers the heavy queries from that copy. MySQL is the first database this release supports. Your InnoDB tables stay the system of record. AxialDB does not write to them.
+This package lets a MySQL server create and query AxialDB tables from inside MySQL, with `CREATE TABLE ... ENGINE=AXIALDB` and ordinary `SELECT`. It is the AxialDB plugin that MySQL loads, and a small bridge library beside it. The tables themselves live in the **AxialDB engine**, which comes in its own package: install that first, on this machine or on another one, and give this server a `[sources.<name>]` entry there with its accounts (the engine package's guide, "Connect a MySQL server").
 
-This download is free for **5 views**, **2 of them live** from the binlog. It does not expire. Read [TERMS.md](TERMS.md) before you rely on it in production: the free version is provided as-is, with no support agreement. A license file on this same engine raises the caps and is how support is agreed. Contact info@axialdb.com.
+Without this package the engine still makes tables from this server, with the `axialdb` command line; they are queried through the engine (the command line, ODBC, JDBC) and not from inside MySQL.
 
-You need two processes. MySQL loads `ha_axialdb.so`. A separate systemd service, **axialdb-engine**, stores the copies and runs the analytical queries. MySQL does not start that service. The unit runs as **`User=mysql`**.
+The download is free; the caps of the free version (5 tables, 2 of them live) are the engine's. Read [TERMS.md](TERMS.md) before you rely on it in production.
+
+## What is in the zip
+
+| File | What it is |
+|------|------------|
+| `ha_axialdb-<patch>-linux-x64.so` | The plugin, one file for each MySQL 9.7 patch: `9.7.0`, `9.7.1`, `9.7.2` |
+| `libaxialdb_mysql_bridge.so` | The bridge the plugin loads |
+| `axialdb-shim.toml` | This server's settings: where the engine is, and which source this server is |
+| `install-axialdb-mysql-functions.sql` | The helper functions (`axialdb_init`, `axialdb_cdc_status`, `axialdb_drop_view`) |
+| `TERMS.md`, `THIRD-PARTY-NOTICES.md`, `VERSION` | Terms, notices, and the build |
 
 ## What you need first
 
-- MySQL Server **9.7**, 64-bit. The plugin must be built for the exact patch reported by `SELECT VERSION()`.
-- Linux x86_64 with glibc **2.35** or newer (Ubuntu 22.04 and newer glibc distros, including Debian 12 and Arch). Alpine will not run it.
+- MySQL Server **9.7**, 64-bit, on Linux x86_64 with glibc **2.35** or newer. The plugin file must match the exact patch `SELECT VERSION()` reports.
+- The AxialDB engine installed and running, with a `[sources.<name>]` entry for this server.
 - `sudo`.
-- The `mysql` user must be able to write `/var/lib/axialdb` and `/var/log/axialdb`. If those directories are owned by root, the sidecar exits at once and systemd stays at `activating`.
-
-For **live** views only, MySQL itself must be a row-based replica source:
-
-```sql
-SELECT @@binlog_format, @@binlog_row_image, @@binlog_row_metadata, @@gtid_mode;
--- expect: ROW, FULL, FULL, ON
-```
-
-Changing those on a server that is already in production is a replication change. Plan it. Do not treat it as an install checkbox you can flip and restart blindly.
-
-## Where the files go
-
-These paths match the `axialdb.toml` in the zip.
-
-| What | Path |
-|------|------|
-| Plugin and bridge | `@@plugin_dir` (often `/usr/lib/mysql/plugin/`) |
-| Engine | `/usr/local/axialdb/axialdb-engine` |
-| Config | `/etc/axialdb/axialdb.toml` |
-| Columnar data and catalog | `/var/lib/axialdb/data/` |
-| Engine log | `/var/log/axialdb/axialdb-engine.log` |
-| Service | `axialdb-engine.service` |
-
-The zip contains the engine, `libaxialdb_mysql_bridge.so`, the plugin `.so` for each MySQL patch supported when the zip was built, `axialdb-engine.service`, `install-axialdb-mysql-functions.sql`, `cdc-limitations.md`, `TERMS.md`, `THIRD-PARTY-NOTICES.md`, and `VERSION`. The same plugin and bridge files are in this folder on GitHub. A plugin for a later 9.7 patch is added to that folder, not to the zip. The plugin name includes your MySQL patch.
 
 ## Install
 
-1. The plugin file is in the zip and in this folder. Its name includes the MySQL patch. There is not one plugin for every patch.
+1. The plugin and the bridge, into MySQL's plugin folder. Pick the plugin for your patch:
 
    ```sql
    SELECT VERSION();
    ```
 
-   Use `ha_axialdb-<version>-linux-x64.so`, where `<version>` is that string (`9.7.0` is `ha_axialdb-9.7.0-linux-x64.so`). If that file is not in the zip or in this folder on GitHub, this AxialDB build does not support that MySQL patch.
-
    ```bash
-   VERSION=9.7.0   # numeric prefix from SELECT VERSION(), drop a -log suffix
+   VERSION=9.7.2   # the numeric part of SELECT VERSION()
    PLUGIN_DIR=$(mysql -N -e "SELECT @@plugin_dir;")
    sudo cp "ha_axialdb-${VERSION}-linux-x64.so" "$PLUGIN_DIR/ha_axialdb.so"
    sudo cp libaxialdb_mysql_bridge.so "$PLUGIN_DIR/"
    ```
 
-   Do not rename the bridge. The plugin loads `libaxialdb_mysql_bridge.so` from that same directory.
+   Do not rename the bridge; the plugin loads `libaxialdb_mysql_bridge.so` from that same folder. If there is no plugin file for your patch, this build does not support it. When you later move to another 9.7 patch, replace only `ha_axialdb.so` with the file for the new patch and restart MySQL.
 
-   When you later move to another 9.7 patch, replace only `ha_axialdb.so` with the file for the new `SELECT VERSION()`, then restart MySQL. Leave the engine and the bridge in place. Fixes are built for the newest 9.7 patch on the release. Older plugin files stay available and are not rebuilt.
-
-2. Engine:
+2. This server's settings:
 
    ```bash
-   sudo mkdir -p /usr/local/axialdb
-   sudo cp axialdb-engine /usr/local/axialdb/
-   sudo chmod +x /usr/local/axialdb/axialdb-engine
+   sudo mkdir -p /etc/axialdb
+   sudo cp axialdb-shim.toml /etc/axialdb/axialdb-shim.toml
    ```
 
-3. Config and directories. The `chown` is required. Skip it and the service cannot open its log.
+   The file names the engine (`engine = "127.0.0.1:9742"` when it runs on this machine) and this server's source (`source = "mysql"`, the name of its `[sources.<name>]` entry in the engine's config). Change either to match. An engine on another machine also needs a secret and usually TLS: the engine package's `remote-engine.md`.
 
-   ```bash
-   sudo mkdir -p /etc/axialdb /var/lib/axialdb/data /var/log/axialdb
-   sudo cp axialdb.toml /etc/axialdb/axialdb.toml
-   sudo chown root:mysql /etc/axialdb/axialdb.toml
-   sudo chmod 640 /etc/axialdb/axialdb.toml
-   sudo chown -R mysql:mysql /var/lib/axialdb /var/log/axialdb
-   ```
-
-   `chmod 640` keeps the replication password, once you add it, readable by root and the `mysql` group only. The sidecar runs as `mysql`.
-
-   The shipped toml uses port **3306**. If your MySQL listens elsewhere, change `[cdc] port` before you enable capture.
-
-4. Tell mysqld where the config is. The unit name is often `mysql` and sometimes `mysqld`. Use the one `systemctl status` shows.
+3. Tell mysqld where its settings are. The unit is often `mysql` and sometimes `mysqld`; use the one `systemctl status` shows.
 
    ```bash
    sudo mkdir -p /etc/systemd/system/mysql.service.d
-   sudo tee /etc/systemd/system/mysql.service.d/axialdb.conf >/dev/null <<'EOF'
-   [Service]
-   Environment=AXIALDB_CONFIG=/etc/axialdb/axialdb.toml
-   EOF
+   printf '[Service]\nEnvironment=AXIALDB_CONFIG=/etc/axialdb/axialdb-shim.toml\n' |
+     sudo tee /etc/systemd/system/mysql.service.d/axialdb.conf >/dev/null
    sudo systemctl daemon-reload
-   ```
-
-5. Sidecar, from the unit file in the zip:
-
-   ```bash
-   sudo cp axialdb-engine.service /etc/systemd/system/
-   sudo systemctl daemon-reload
-   sudo systemctl enable --now axialdb-engine
-   systemctl is-active axialdb-engine
-   ```
-
-   You want `active`. `activating` almost always means the `mysql` user cannot write the log directory. See below.
-
-6. Restart MySQL so it sees `AXIALDB_CONFIG`:
-
-   ```bash
    sudo systemctl restart mysql
    ```
 
-7. Register the plugin and the helper functions once:
+4. Register the plugin and the helper functions once:
 
    ```sql
    INSTALL PLUGIN axialdb SONAME 'ha_axialdb.so';
    ```
 
-   Then `mysql -D mysql < install-axialdb-mysql-functions.sql`.
+   Then `mysql -D mysql < install-axialdb-mysql-functions.sql`. The script keeps its statements out of the binlog, so a replica without the plugin is not stopped by them; run it as an account that may set `sql_log_bin`.
 
-8. Check the link:
+5. Check the link:
 
    ```sql
    SELECT axialdb_init();
    ```
 
-   And from the shell: `ss -ltn | grep 9742` should show `127.0.0.1:9742`.
+   It connects to the engine and says which source this server is. An error names what is wrong: the engine cannot be reached, or `source` is not a source of the engine.
 
-## First view
+## First tables
 
-A snapshot copies the query result once. Later changes to the source are not in it until you create it again.
-
-```sql
-CREATE DATABASE IF NOT EXISTS demo_perf;
-CREATE TABLE demo_perf.t ENGINE=AXIALDB AS
-SELECT 1 AS id, 'hello' AS msg;
-SELECT * FROM demo_perf.t;
-```
-
-`GROUP BY` belongs in the query you run against the view. That is the fast path. The numbers we published, including the WSL2 set, are on [axialdb.com/measurements](https://axialdb.com/measurements). WSL2 is not a bare-metal Linux server. Measure on yours.
-
-## Live view (binlog)
-
-`[cdc] enabled` is **false** in the shipped toml. Turn it on only after the server settings above are true and this user exists. Point the host at `127.0.0.1` if MySQL is local, and set `port` to the real port (the file says 3306).
+A snapshot copies the query's result once:
 
 ```sql
-CREATE USER 'axialdb_cdc'@'127.0.0.1' IDENTIFIED BY 'choose-a-password';
-GRANT REPLICATION SLAVE, REPLICATION CLIENT, SELECT ON *.* TO 'axialdb_cdc'@'127.0.0.1';
+CREATE DATABASE IF NOT EXISTS demo;
+CREATE TABLE demo.t ENGINE=AXIALDB AS SELECT 1 AS id, 'hello' AS msg;
+SELECT * FROM demo.t;
 ```
 
-Put the password in `/etc/axialdb/axialdb.toml`, set `enabled = true`, and `sudo systemctl restart axialdb-engine`.
-
-A live view accepts one InnoDB table, or a fact table left-joined to its dimensions on the dimension primary key, with plain source columns and the primary keys included. Anything else fails the `CREATE`. It does not silently become a snapshot. Details: [cdc-limitations.md](cdc-limitations.md).
+A live table follows its source tables. It needs the two accounts of this server's source in the engine's config (`user` and `capture_user`) and a row-based binlog; the engine package's guide has both. What its query may contain is in the engine package's `live-tables.md`.
 
 ```sql
--- Replace your_db.orders with an InnoDB table you already have.
--- Include its primary key. See cdc-limitations.md.
-CREATE TABLE your_db.orders_av ENGINE=AXIALDB COMMENT='cdc' AS
-SELECT id, customer_id, total
-FROM your_db.orders;
+CREATE TABLE your_db.orders_av ENGINE=AXIALDB COMMENT='live' AS
+SELECT id, customer_id, created_at, total FROM your_db.orders;
 
-SELECT axialdb_cdc_status('your_db', 'orders_av');
+SELECT axialdb_cdc_status('your_db', 'orders_av');   -- wait for healthy
+SELECT customer_id, SUM(total) FROM your_db.orders_av GROUP BY customer_id;
 ```
 
-Wait for `healthy`. Until then a `SELECT` on that table is refused. Source inserts, updates, and deletes then apply on their own, usually within a few seconds. `TRUNCATE` on the source means recreate the view. Do not change a primary key on a watched source table: the new key is applied and the old key remains.
+`COMMENT='live; schema=reporting'` puts the AxialDB table into another schema of the engine. `DROP TABLE your_db.orders_av` removes both the MySQL table and the engine's. `GROUP BY` belongs in the queries you run on the table, which the engine answers.
 
-A sixth view, or a third live view, is refused. Existing views stay. To raise the cap, place `axialdb.lic` beside `/etc/axialdb/axialdb.toml` and restart `axialdb-engine`.
+A table created here is also a table of the engine: the command line, ODBC, and JDBC query it under its AxialDB name, and one query there can join it with tables from other sources.
 
-## If you already installed 0.1.x
+## If something fails
 
-Remove the old plugin, unit, and engine, then install this zip on the paths above and create the views again. Do not reuse an old config whose paths differ from this toml.
+| What you see | What it usually means |
+|--------------|------------------------|
+| `axialdb_init()` cannot connect | The engine is stopped, or MySQL was not restarted after `AXIALDB_CONFIG` was set, or `engine` in `axialdb-shim.toml` is wrong |
+| The plugin does not load | `libaxialdb_mysql_bridge.so` is not in the plugin folder, or the plugin file is not the one for your patch |
+| A live `CREATE` fails at once | The query is outside `live-tables.md`, or `user` or `capture_user` of this server's source is empty in the engine's config. The error says which |
+| `AxialDB cannot tell which zone that is on this server` | The session is in `time_zone = SYSTEM` and the server's zone has no name AxialDB can read, for example a copied `/etc/localtime` as in the official `mysql` image. Set `system_time_zone` in `axialdb-shim.toml` to the zone's name, such as `"America/Toronto"` |
+| The table stays `catching_up` | The engine is still applying the changes since the first copy. Queries are refused until it is `healthy` |
+| The table shows old data, status `updating N% of a change of R rows` | A large change to its source is being applied. Queries answer from the table as it was until the change is applied whole |
 
-## If the sidecar will not start
-
-`journalctl -u axialdb-engine -n 30` and look for `Permission denied` on the log file.
-
-```bash
-sudo mkdir -p /var/lib/axialdb/data /var/log/axialdb
-sudo chown -R mysql:mysql /var/lib/axialdb /var/log/axialdb
-sudo systemctl restart axialdb-engine
-systemctl is-active axialdb-engine
-```
-
-`ls -ld /var/log/axialdb /var/lib/axialdb` should show `mysql mysql`.
-
-On Ubuntu, AppArmor can stop mysqld from reading `/etc/axialdb/axialdb.toml` or connecting to `127.0.0.1:9742`. If `axialdb_init()` fails and the sidecar is active, check `journalctl -u mysql` and the AppArmor denials before changing the unit.
+On Ubuntu, AppArmor can stop mysqld from reading `/etc/axialdb/axialdb-shim.toml` or from connecting to the engine. If `axialdb_init()` fails while the engine runs, look at `journalctl -u mysql` and the AppArmor denials.
 
 ## Remove it
 
 ```sql
-DROP TABLE IF EXISTS your_db.orders_av;
+SET sql_log_bin = 0;   -- a replica has no AxialDB functions to drop
 DROP FUNCTION IF EXISTS axialdb_init;
 DROP FUNCTION IF EXISTS axialdb_drop_view;
 DROP FUNCTION IF EXISTS axialdb_cdc_publish;
@@ -194,4 +122,4 @@ DROP FUNCTION IF EXISTS axialdb_cdc_status;
 UNINSTALL PLUGIN axialdb;
 ```
 
-`sudo systemctl disable --now axialdb-engine`, then remove the unit, the two `.so` files, `/usr/local/axialdb/axialdb-engine`, `/etc/axialdb`, and the mysqld drop-in if you do not want them. Deleting `/var/lib/axialdb` deletes the columnar copies.
+Drop the AxialDB tables first (`DROP TABLE` of each). Then remove the two files from the plugin folder, `/etc/axialdb/axialdb-shim.toml`, and the mysqld drop-in, and restart MySQL.

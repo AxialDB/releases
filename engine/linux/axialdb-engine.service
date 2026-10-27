@@ -1,0 +1,22 @@
+[Unit]
+Description=AxialDB engine
+Documentation=https://github.com/AxialDB/releases/tree/main/engine/linux
+After=network-online.target
+Wants=network-online.target
+
+[Service]
+Type=simple
+ExecStart=/usr/local/axialdb/axialdb-engine --config /etc/axialdb/axialdb.toml
+Restart=on-failure
+RestartSec=5
+# The database comes first: when memory runs out the kernel ends the
+# engine, not mysqld (the engine starts again by itself), and while both
+# are busy mysqld gets the larger share of CPU and disk.
+OOMScoreAdjust=500
+CPUWeight=50
+IOWeight=50
+# A system account of its own, made by the install guide.
+User=axialdb
+
+[Install]
+WantedBy=multi-user.target

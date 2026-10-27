@@ -25,7 +25,7 @@ AxialDB is provided **as-is**, without warranty of any kind, including merchanta
 
 You choose where to install it and how far to rely on it. You are responsible for evaluating it on your systems, for backups, and for the reports you build.
 
-The free download includes **no support and no SLA**. What the product does, and the CDC create subset, is described in the download (`README.md`, `cdc-limitations.md`).
+The free download includes **no support and no SLA**. What the product does, and the CDC create subset, is described in the download (`README.md`, `live-tables.md`).
 
 ## Liability
 

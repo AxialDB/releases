@@ -1,0 +1,17 @@
+{
+  "axialdb_version": "6.0.0",
+  "product": "mysql-shim",
+  "mysql_version": "9.7",
+  "mysql_patches": [
+    "9.7.0",
+    "9.7.1",
+    "9.7.2"
+  ],
+  "platform": "windows-x64",
+  "build_id": "20261026-002",
+  "artifact": "axialdb-mysql-shim-6.0.0-9.7-windows-x64.zip",
+  "sha256": "2685054360165cdc86e8d1c86d068d1143b982c2eda4ed637e9e516a1bfe146d",
+  "released_at": "2026-10-27T00:00:00Z",
+  "github_release_tag": "mysql/9.7/v6.0.0",
+  "notes": "MySQL shim: the plugin for MySQL 9.7.0, 9.7.1, 9.7.2 and its bridge. Needs the engine 6.0.0. This download uses TERMS.md."
+}

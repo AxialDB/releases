@@ -1,0 +1,28 @@
+# AxialDB settings of this MySQL server. Copy to /etc/axialdb/axialdb-shim.toml
+# and point mysqld at it: Environment=AXIALDB_CONFIG=/etc/axialdb/axialdb-shim.toml
+# The plugin reads this file and nothing of the engine's: the engine's config
+# (axialdb.toml) stays with the engine, on this machine or another.
+
+# The engine: host:port. 127.0.0.1:9742 when it runs on this machine.
+engine = "127.0.0.1:9742"
+# This server's [sources.<name>] entry in the engine's config.
+source = "mysql"
+
+# Only when the engine is on another machine:
+# secret_file = "/etc/axialdb/shim.secret"   # holds this source's shim_secret; readable only by the MySQL service account
+# tls = true                                 # encrypt the connection
+# tls_ca = "/etc/axialdb/engine-cert.pem"    # PEM file with the engine's certificate
+
+# How long a create or a query may wait for the engine, in seconds. 0 waits forever.
+query_timeout_secs = 300
+# After MySQL has committed a CREATE TABLE, how long the plugin keeps trying to
+# tell the engine to publish the table, in seconds.
+publish_retry_secs = 15
+# debug or trace adds the plugin's own lines to the MySQL error log.
+log_level = "info"
+
+# The zone of a session in time_zone = SYSTEM, MySQL's default. AxialDB reads
+# it the way mysqld does: TZ, then /etc/localtime. Set it to the zone's name
+# when that fails (a copied /etc/localtime, as in the official mysql image) or
+# should be pinned.
+# system_time_zone = "America/Toronto"
