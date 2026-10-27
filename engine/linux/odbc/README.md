@@ -14,6 +14,8 @@ A read-only ODBC driver for `axialdb-engine`. Tableau, Power BI, and any other O
 
 Windows records the path of `axialdb_odbc.dll`. Run the script again if you move the file. `.\register-axialdb-odbc.ps1 -Remove` takes the registration away.
 
+If PowerShell answers that the script is not digitally signed, the zip was unpacked with the mark Windows puts on a browser download: `Unblock-File .\*.ps1` and run it again, or `powershell -ExecutionPolicy Bypass -File .\register-axialdb-odbc.ps1`. The same applies to `install-tableau-tdc.ps1` below.
+
 **Linux.** Needs unixODBC (Debian and Ubuntu: `apt install unixodbc odbcinst`).
 
 ```bash

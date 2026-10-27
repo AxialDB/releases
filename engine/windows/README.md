@@ -40,6 +40,8 @@ These paths match the `axialdb.toml` in the zip. If you move anything, change th
 
 Administrator PowerShell, in the folder of the unpacked zip.
 
+Before you unpack it, clear the mark Windows puts on a file a browser downloaded: right-click the zip, Properties, tick **Unblock**, OK (or `Unblock-File .\axialdb-engine-6.0.0-windows-x64.zip`). With the mark still on, PowerShell refuses the scripts in `odbc\` as not signed.
+
 1. The engine and the command line, and the command line on the `PATH`:
 
    ```powershell
@@ -177,6 +179,7 @@ This release does not read the tables of 5.0.0. With the old build still install
 | `cannot reach the engine at 127.0.0.1:9742` | AxialDBEngine is stopped. `Get-Service AxialDBEngine`, and the log below |
 | A live create fails at once | The query is outside [live-tables.md](live-tables.md), or `user` or `capture_user` of the source is empty. The error says which |
 | Status stays `catching_up` | The engine is still applying the source's changes since the first copy. Queries are refused until it is `healthy` |
+| `register-axialdb-odbc.ps1 ... is not digitally signed` | The zip was unpacked with its internet mark still on it. `Unblock-File .\odbc\*.ps1` and run it again, or `powershell -ExecutionPolicy Bypass -File .\odbc\register-axialdb-odbc.ps1` |
 
 Engine log: `C:\ProgramData\AxialDB\mysql\logs\axialdb-engine.log`.
 

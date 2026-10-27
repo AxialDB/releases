@@ -1,8 +1,8 @@
 # MySQL and the engine on different machines
 
-The engine package's install guides for [Linux](linux/README.md) and [Windows](windows/README.md) put the engine on one machine, where it takes connections from that machine only. Nothing in this file is needed when the MySQL servers with the plugin and the reporting tools are on that machine too.
+The engine package's install guide, [README.md](README.md) beside this file, puts the engine on one machine, where it takes connections from that machine only. Nothing in this file is needed when the MySQL servers with the plugin and the reporting tools are on that machine too.
 
-The engine can also run elsewhere, and one engine can serve several MySQL servers. The plugin is installed on each MySQL server, and each server is one `[sources.<name>]` entry in the engine's config. A mixed install is fine: the engine on the machine of one MySQL server, and other servers reaching it over the network.
+The engine can also run elsewhere, and one engine can serve several MySQL servers. Each server is one `[sources.<name>]` entry in the engine's config, and the optional MySQL shim's plugin goes on each server that should create and query tables from inside MySQL. A mixed install is fine: the engine on the machine of one MySQL server, and other servers reaching it over the network.
 
 ## What crosses the network
 

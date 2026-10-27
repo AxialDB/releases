@@ -55,7 +55,7 @@ A live MySQL table is made by `CREATE TABLE ... ENGINE=AXIALDB COMMENT='live' AS
 
 - Every source table needs a **PRIMARY KEY**. Every key column of the fact table (the one table, or the first table of a star) is in the `SELECT` under its own name, written exactly as the table declares it: `id AS order_id` is refused, and so is `SELECT ID` for a column `id` (write `id`, or `ID AS id`). Every other column may be renamed.
 - The fact column a join is made on is in the `SELECT`, under any name. A dimension's key column may be left out or renamed.
-- An `UPDATE` that changes a primary key on a source table is a known hole: the new key is applied and the old key stays. Avoid it on watched tables, or create the table again.
+- An `UPDATE` that changes a primary key on a source table is followed: the row is in the table under its new key only.
 
 ### Types
 

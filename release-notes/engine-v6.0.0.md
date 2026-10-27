@@ -2,8 +2,8 @@
 
 | Zip | Build-ID | SHA256 |
 |-----|----------|--------|
-| `axialdb-engine-6.0.0-windows-x64.zip` | `20261026-002` | `fdfd6cbdb8c3900a9ab2373c614a85376005a0b5f0e11ef110d02e8f135bfae8` |
-| `axialdb-engine-6.0.0-linux-x64.zip` | `20261026-002` | `808af4d30588539ffa26f83d04ac5d27f85f503661067f42d9c7eb00323f7db1` |
+| `axialdb-engine-6.0.0-windows-x64.zip` | `20261027-001` | `e22612282512129aa22dd8bdcb055988f3162f28430fd800849151aaa136fde7` |
+| `axialdb-engine-6.0.0-linux-x64.zip` | `20261027-001` | `f9daf76b5d0d43994ff21eea657fe0d89d8a3154b41e5215ad890443126fb3b7` |
 
 **Released:** 2026-10-27
 
